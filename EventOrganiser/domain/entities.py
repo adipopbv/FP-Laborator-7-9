@@ -12,5 +12,8 @@ class Command:
 
     #--------------------------------
 
-    def run(self):    
+    def run(self):
+        """
+        runs the function
+        """
         self.get_function()()

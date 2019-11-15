@@ -18,6 +18,18 @@ class CommandsRepo(Repo):
     #-----------------------------
 
     def get_command_with_id(self, id):
+        """
+        gets the first found command with the given id
+        
+        Args:
+            id (str): an id
+        
+        Raises:
+            Exception: no command with the given id in the repo
+        
+        Returns:
+            Command: a command
+        """
         commands = self.get_items()
         for command in commands:
             if command.get_id() == id:

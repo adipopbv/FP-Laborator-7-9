@@ -3,7 +3,7 @@ from framework.repos import CommandsRepo
 from domain.entities import Command
 
 class Client:
-
+    
     def __init__(self, service):
         self._service = service
         self._gui = Console()
@@ -23,10 +23,25 @@ class Client:
     #---------------------------
 
     def read(self, prompt):
+        """
+        reads input from the user
+        
+        Args:
+            prompt (str): text to be outputted before getting input
+        
+        Returns:
+            str: input text
+        """
         text = self.get_gui().read(prompt)
         return text
 
     def read_command(self):
+        """
+        reads input command from the user
+        
+        Returns:
+            list: a command
+        """
         try:
             text = self.read("Please input a command: ")
             text = text.strip()
@@ -37,17 +52,35 @@ class Client:
             return self.read_command()         
 
     def write(self, message):
+        """
+        writes output message to the user
+        
+        Args:
+            message (str): output text
+        """
         self.get_gui().write(message)
 
     def write_exception(self, exception):
+        """
+        writes exception to the user
+        
+        Args:
+            exception (Exception): an exception
+        """
         self.write("Error: " + str(exception))
 
     #---------------------------
 
     def add_person_to_repo(self):
-        print("person added")
+        """
+        reads and adds a person to the repo
+        """
+        pass
 
     def run(self):
+        """
+        application main loop
+        """
         while True:
             try:
                 command = self.read_command()
