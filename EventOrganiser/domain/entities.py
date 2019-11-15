@@ -20,7 +20,7 @@ class Command:
 
 class Field:
 
-    def _init__(self, value):
+    def __init__(self, value):
         self._value = value
 
     def get_value(self):
@@ -29,27 +29,27 @@ class Field:
 class Id(Field):
 
     def __init__(self, value):
-        Field.__init__(value)
+        Field.__init__(self, value)
 
 class Name(Field):
 
     def __init__(self, value):
-        Field.__init__(value)
+        Field.__init__(self, value)
 
 class CityName(Field):
 
     def __init__(self, value):
-        Field.__init__(value)
+        Field.__init__(self, value)
 
 class StreetName(Field):
 
     def __init__(self, value):
-        Field.__init__(value)
+        Field.__init__(self, value)
 
 class Number(Field):
 
     def __init__(self, value):
-        Field.__init__(value)
+        Field.__init__(self, value)
 
 class Adress:
 
