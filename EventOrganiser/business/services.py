@@ -13,3 +13,6 @@ class Service:
         return self._events
 
     #-----------------------------------
+
+    def add_person_to_repo(self, repo, id, name, city, street, number):
+        pass
