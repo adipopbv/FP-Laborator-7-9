@@ -45,17 +45,17 @@ class Tests:
 
     class CommandsRepoTest:
         from framework.repos import CommandsRepo
-        from domain.entities import Command
+        from domain.entities import Command, Id, Function
 
         def run_all(self):
             self.get_commands_with_id_test()
 
         def get_commands_with_id_test(self):
-            command1 = self.Command("1", None)
-            command2 = self.Command("2", None)
+            command1 = self.Command(self.Id("1"), self.Function(None))
+            command2 = self.Command(self.Id("2"), self.Function(None))
             commandsRepo = self.CommandsRepo(command1, command2)
-            assert commandsRepo.get_command_with_id("2") == command2
-            assert not commandsRepo.get_command_with_id("2") == command1
+            assert commandsRepo.get_command_with_id_value("2") == command2
+            assert not commandsRepo.get_command_with_id_value("2") == command1
             try:
                 assert commandsRepo.get_command_with_id(1)
                 assert False
