@@ -133,6 +133,12 @@ class Date(Entity):
         return self._year
 
     def make_dict(self):
+        """
+        makes a dictionary from its fields
+        
+        Returns:
+            dict: a dictionary
+        """
         dictionary = {
             "day": self.get_day().make_dict(),
             "month": self.get_month().make_dict(),
@@ -153,6 +159,12 @@ class Duration(Entity):
         return self._minutes
 
     def make_dict(self):
+        """
+        makes a dictionary from its fields
+        
+        Returns:
+            dict: a dictionary
+        """
         dictionary = {
             "hours": self.get_hours().make_dict(),
             "minutes": self.get_minutes().make_dict()
@@ -198,6 +210,17 @@ class Person(Entity):
         self._id = id
         self._name = name
         self._adress = adress
+
+    def __eq__(self, other):
+        if (
+            self.get_id().get_value() == other.get_id().get_value() and
+            self.get_name().get_value() == other.get_name().get_value() and
+            self.get_adress().get_city_name().get_value() == other.get_adress().get_city_name().get_value() and
+            self.get_adress().get_street_name().get_value() == other.get_adress().get_street_name().get_value() and
+            self.get_adress().get_number().get_value() == other.get_adress().get_number().get_value()
+        ):
+            return True
+        return False
 
     def get_id(self):
         return self._id

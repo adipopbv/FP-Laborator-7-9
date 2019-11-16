@@ -10,6 +10,7 @@ class Client:
         self._commands = CommandsRepo(
             Command(Id("1"), Function(self.add_person_to_repo)),
             Command(Id("2"), Function(self.add_event_to_repo)),
+            Command(Id("3"), Function(self.modify_person_from_repo)),
         )
 
     def get_service(self):
@@ -83,7 +84,7 @@ class Client:
             self.write("Please input a person:")
             self.get_service().add_person_to_repo(
                 self.get_service().get_persons(), 
-                self.read("ID: "),  
+                self.read("Id: "),  
                 self.read("Name: "),
                 self.read("Adress \n    City: "),
                 self.read("    Street: "),
@@ -94,6 +95,9 @@ class Client:
             self.write_exception(ex)
 
     def add_event_to_repo(self):
+        """
+        reads and adds an event to the repo
+        """
         try:
             self.write("Please input an event:")
             self.get_service().add_event_to_repo(
@@ -105,6 +109,25 @@ class Client:
                 self.read("Duration \n    Hours: "),
                 self.read("    Minutes: "),
                 self.read("Description: ")
+            )
+            self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
+
+    def modify_person_from_repo(self):
+        """
+        reads an id and a person's new data to change to
+        """
+        try:
+            self.write("Please input a person's id:")
+            self.get_service().modify_person_from_repo(
+                self.get_service().get_persons(),
+                self.read("Id: "),
+                self.read("Please input the modified person's data:\nId: "),  
+                self.read("Name: "),
+                self.read("Adress \n    City: "),
+                self.read("    Street: "),
+                self.read("    Number: ")
             )
             self.write_success()
         except Exception as ex:

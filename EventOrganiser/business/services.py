@@ -53,17 +53,50 @@ class Service:
         return Person(__id, __name, adress)
 
     def create_date(self, day, month, year):
+        """
+        creates Date object
+        
+        Args:
+            day (str): a day
+            month (str): a month
+            year (str): a year
+        
+        Returns:
+            Date: a date
+        """
         __day = Day(day)
         __month = Month(month)
         __year = Year(year)
         return Date(__day, __month, __year)
 
     def create_duration(self, hours, minutes):
+        """
+        creates Duration object
+        
+        Args:
+            hours (str): number of hours
+            minutes (str): number of minutes
+        
+        Returns:
+            Duration: duration
+        """
         __hours = Hours(hours)
         __minutes = Minutes(minutes)
         return Duration(__hours, __minutes)
 
     def create_event(self, id, date, duration, description):
+        """
+        create Event object
+        
+        Args:
+            id (str): an id
+            date (Date): a date
+            duration (Duration): a duration
+            description (str): a description
+        
+        Returns:
+            Event: an event
+        """
         __id = Id(id)
         __description = Description(description)
         return Event(__id, date, duration, __description)
@@ -75,7 +108,7 @@ class Service:
         adds person with the given data in repo
         
         Args:
-            repo (Repo): a repo
+            repo (IdRepo): a repo
             id (str): an id
             name (str): a name
             city (str): a city name
@@ -83,24 +116,71 @@ class Service:
             number (str): a house number
         
         Raises:
-            Exception: invalid person
+            Exception: allready existing id / invalid person
         
         Returns:
-            Repo: newly modified repo
+            IdRepo: newly modified repo
         """
         try:
             person = self.create_person(id, name, self.create_adress(city, street, number))
-            self.get_validator().validate_person(person)
-            self.get_persons().add(person)
+            self.get_validator().validate_person(repo, person)
+            repo.add(person)
             return repo
         except Exception as ex:
             raise Exception(ex)
 
     def add_event_to_repo(self, repo, id, day, month, year, hours, minutes, description):
+        """
+        adds event with the given data in repo
+        
+        Args:
+            repo (IdRepo): a repo
+            id (str): an id
+            day (str): a day
+            month (str): a month
+            year (str): a year
+            hours (str): number of hours
+            minutes (str): number of minutes
+            description (str): a description
+        
+        Raises:
+            Exception: allready existing id / invalid event
+        
+        Returns:
+            IdRepo: newly modified repo
+        """
         try:
             event = self.create_event(id, self.create_date(day, month, year), self.create_duration(hours, minutes), description)
-            self.get_validator().validate_event(event)
-            self.get_events().add(event)
+            self.get_validator().validate_event(repo, event)
+            repo.add(event)
+            return repo
+        except Exception as ex:
+            raise Exception(ex)
+
+    def modify_person_from_repo(self, repo, search_id, id, name, city, street, number):
+        """
+        modifies person with the given id to the given data in repo
+        
+        Args:
+            repo (IdRepo): a repo
+            search_id (str): an id
+            id (str): an id
+            name (str): a name
+            city (str): a city
+            street (str): a street
+            number (str): a number
+        
+        Raises:
+            Exception: no person with id / invalid person
+        
+        Returns:
+            IdRepo: newly modified repo
+        """
+        try:
+            person1 = self.get_persons().get_item_with_id_value(search_id)
+            person2 = self.create_person(id, name, self.create_adress(city, street, number))
+            self.get_validator().validate_person(repo, person2)
+            repo.replace(person1, person2)
             return repo
         except Exception as ex:
             raise Exception(ex)

@@ -3,7 +3,7 @@ from domain.entities import Day, Month, Year, Date, Hours, Minutes, Duration, De
 
 class Validator:
 
-    def validate_person(self, person):
+    def validate_person(self, repo, person):
         """
         validates the given person
         
@@ -13,15 +13,22 @@ class Validator:
         Raises:
             Exception: invalid person
         """
-        if ( type(person.get_id()) != Id and person.get_id() < 0 and
+        if (type(person.get_id()) != Id and person.get_id() < 0 and
             type(person.get_name()) != Name and
             type(person.get_adress()) != Adress and
             type(person.get_adress().get_city()) != CityName and
             type(person.get_adress().get_street()) != StreetName and
             type(person.get_adress().get_number()) != Number ):
             raise Exception("Invalid person!")
+        ok = None
+        try:
+            ok = repo.get_item_with_id_value(person.get_id().get_value())
+        except:
+            pass
+        if ok != None:
+            raise Exception("Invalid person!")
 
-    def validate_event(self, event):
+    def validate_event(self, repo, event):
         """
         validates the given event
         
@@ -38,4 +45,11 @@ class Validator:
             type(event.get_duration().get_hours()) != Hours and
             type(event.get_duration().get_minutes()) != Minutes and
             type(event.get_gescription()) != Description):
-            raise Exception("Invalid person!")
+            raise Exception("Invalid event!")
+        ok = None
+        try:
+            ok = repo.get_item_with_id_value(event.get_id().get_value())
+        except:
+            pass
+        if ok != None:
+            raise Exception("Invalid event!")
