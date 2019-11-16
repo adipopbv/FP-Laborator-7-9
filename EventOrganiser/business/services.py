@@ -1,4 +1,5 @@
 from domain.entities import Id, Name, CityName, StreetName, Number, Adress, Person
+from domain.entities import Day, Month, Year, Date, Hours, Minutes, Duration, Description, Event
 
 class Service:
     
@@ -51,6 +52,24 @@ class Service:
         __name = Name(name)
         return Person(__id, __name, adress)
 
+    def create_date(self, day, month, year):
+        __day = Day(day)
+        __month = Month(month)
+        __year = Year(year)
+        return Date(__day, __month, __year)
+
+    def create_duration(self, hours, minutes):
+        __hours = Hours(hours)
+        __minutes = Minutes(minutes)
+        return Duration(__hours, __minutes)
+
+    def create_event(self, id, date, duration, description):
+        __id = Id(id)
+        __description = Description(description)
+        return Event(__id, date, duration, __description)
+
+    #-----------------------------------
+
     def add_person_to_repo(self, repo, id, name, city, street, number):
         """
         adds person with the given data in repo
@@ -73,6 +92,15 @@ class Service:
             person = self.create_person(id, name, self.create_adress(city, street, number))
             self.get_validator().validate_person(person)
             self.get_persons().add(person)
+            return repo
+        except Exception as ex:
+            raise Exception(ex)
+
+    def add_event_to_repo(self, repo, id, day, month, year, hours, minutes, description):
+        try:
+            event = self.create_event(id, self.create_date(day, month, year), self.create_duration(hours, minutes), description)
+            self.get_validator().validate_event(event)
+            self.get_events().add(event)
             return repo
         except Exception as ex:
             raise Exception(ex)

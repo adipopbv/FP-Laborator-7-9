@@ -8,7 +8,8 @@ class Client:
         self._service = service
         self._gui = Console()
         self._commands = CommandsRepo(
-            Command(Id("1"), Function(self.add_person_to_repo))
+            Command(Id("1"), Function(self.add_person_to_repo)),
+            Command(Id("2"), Function(self.add_event_to_repo)),
         )
 
     def get_service(self):
@@ -87,6 +88,23 @@ class Client:
                 self.read("Adress \n    City: "),
                 self.read("    Street: "),
                 self.read("    Number: ")
+            )
+            self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
+
+    def add_event_to_repo(self):
+        try:
+            self.write("Please input an event:")
+            self.get_service().add_event_to_repo(
+                self.get_service().get_events(),
+                self.read("Id: "),
+                self.read("Date \n    Day: "),
+                self.read("    Month: "),
+                self.read("    Year: "),
+                self.read("Duration \n    Hours: "),
+                self.read("    Minutes: "),
+                self.read("Description: ")
             )
             self.write_success()
         except Exception as ex:

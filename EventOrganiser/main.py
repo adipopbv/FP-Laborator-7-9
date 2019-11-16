@@ -6,7 +6,8 @@ from tests import Tests
 
 tests = Tests()
 persons = FileRepo("persons.json")
-events = Repo()
+#events = Repo()
+events = FileRepo("events.json")
 validator = Validator()
 service = Service(persons, events, validator)
 client = Client(service)
