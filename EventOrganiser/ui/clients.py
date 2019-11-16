@@ -187,6 +187,9 @@ class Client:
             self.write_exception(ex)
 
     def exit_app(self):
+        """
+        exits application
+        """
         self.write("Application exit...")
         exit()
 
