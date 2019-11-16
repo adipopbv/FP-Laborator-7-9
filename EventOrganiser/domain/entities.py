@@ -1,30 +1,18 @@
-class Command:
+class Entity:
 
-    def __init__(self, id, function):
-        self._id = id
-        self._function = function
+    def make_dict(self):
+        return {}
 
-    def get_id(self):
-        return self._id
-
-    def get_function(self):
-        return self._function
-
-    #--------------------------------
-
-    def run(self):
-        """
-        runs the function
-        """
-        self.get_function()()
-
-class Field:
+class Field(Entity):
 
     def __init__(self, value):
         self._value = value
 
     def get_value(self):
         return self._value
+
+    def make_dict(self):
+        return {"value": self.get_value()}
 
 class Id(Field):
 
@@ -51,7 +39,39 @@ class Number(Field):
     def __init__(self, value):
         Field.__init__(self, value)
 
-class Adress:
+class Function(Field):
+
+    def __init__(self, value):
+        Field.__init__(self, value)
+
+class Command(Entity):
+
+    def __init__(self, id, function):
+        self._id = id
+        self._function = function
+
+    def get_id(self):
+        return self._id
+
+    def get_function(self):
+        return self._function
+
+    def make_dict(self):
+        dictionary = {
+            "id": self.get_id().make_dict(),
+            "function": self.get_function().make_dict()
+        }
+        return dictionary
+
+    #--------------------------------
+
+    def run(self):
+        """
+        runs the function
+        """
+        self.get_function().get_value()()
+
+class Adress(Entity):
 
     def __init__(self, city_name, street_name, number):
         self._city_name = city_name
@@ -67,7 +87,15 @@ class Adress:
     def get_number(self):
         return self._number
 
-class Person:
+    def make_dict(self):
+        dictionary = {
+            "city_name": self.get_city_name().make_dict(),
+            "street_name": self.get_street_name().make_dict(),
+            "number": self.get_number().make_dict()
+        }
+        return dictionary
+
+class Person(Entity):
 
     def __init__(self, id, name, adress):
         self._id = id
@@ -81,4 +109,12 @@ class Person:
         return self._name
 
     def get_adress(self):
-        return self._adress        
+        return self._adress  
+
+    def make_dict(self):
+        dictionary = {
+            "id": self.get_id().make_dict(),
+            "name": self.get_name().make_dict(),
+            "adress": self.get_adress().make_dict()
+        }
+        return dictionary

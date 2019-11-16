@@ -19,6 +19,39 @@ class Repo:
 
 
 
+class FileRepo(Repo):
+    import json
+
+    def __init__(self, file_name, *items):
+        self._items = [item for item in items]
+        self._file_name = file_name
+
+    def get_file_name(self):
+        return self._file_name
+
+    def add(self, item):
+        Repo.add(self, item)
+        try:
+            self.update_file()
+        except Exception as ex:
+            raise Exception(ex)
+
+    #-------------------------------------
+
+    def update_file(self):
+        try:
+            file = open(self.get_file_name(), "w")
+            item_list = []
+            for item in self.get_items():
+                item_dict = item.make_dict()
+                item_list.append(item_dict)
+            file_json = self.json.dumps(item_list, indent = 5)
+            file.write(file_json)
+            file.close()
+        except Exception as ex:
+            file.close()
+            raise Exception(ex)
+
 class CommandsRepo(Repo):
 
     def __init__(self, *commands):
@@ -26,7 +59,7 @@ class CommandsRepo(Repo):
 
     #-----------------------------
 
-    def get_command_with_id(self, id):
+    def get_command_with_id_value(self, id):
         """
         gets the first found command with the given id
         
@@ -41,6 +74,6 @@ class CommandsRepo(Repo):
         """
         commands = self.get_items()
         for command in commands:
-            if command.get_id() == id:
+            if command.get_id().get_value() == id:
                 return command
         raise Exception("No command with the given id!")
