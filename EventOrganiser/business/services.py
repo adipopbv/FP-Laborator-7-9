@@ -216,6 +216,19 @@ class Service:
             raise Exception(ex)
 
     def search_person_in_repo(self, repo, id):
+        """
+        searches for person in repo by id
+        
+        Args:
+            repo (IdRepo): a repo
+            id (str): an id
+        
+        Raises:
+            Exception: no person with id
+        
+        Returns:
+            Person: a person
+        """
         try:
             person = self.get_persons().get_item_with_id_value(id)
             return person

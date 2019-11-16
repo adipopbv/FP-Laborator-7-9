@@ -68,6 +68,12 @@ class Client:
         self.write("Operation successful!")
 
     def write_person(self, person):
+        """
+        writes a persons data to the user
+        
+        Args:
+            person (Person): a person
+        """
         self.write("The requested person is:")
         self.write("Id: " + person.get_id().get_value())
         self.write("Name: " + person.get_name().get_value())
@@ -166,6 +172,9 @@ class Client:
             self.write_exception(ex)
 
     def search_person_in_repo(self):
+        """
+        searches a person by id
+        """
         try:
             self.write("Please input a person's id:")
             person = self.get_service().search_person_in_repo(
