@@ -1,3 +1,32 @@
+class JsonSaver:
+    import json
+
+    def __init__(self, file_name):
+        self._file_name = file_name
+
+    def get_file_name(self):
+        return self._file_name
+
+    def write_to_file(self, data):
+        try:
+            file = open(self.get_file_name(), "w")
+            data = self.json.dumps(data, indent = 4)
+            file.write(data)
+            file.close()
+        except Exception as ex:
+            file.close()
+            raise Exception(ex)
+
+    def append_to_file(self, data):
+        try:
+            file = open(self.get_file_name(), "a")
+            data = ",\n" + self.json.dumps(data, indent = 4)
+            file.write(data)
+            file.close()
+        except Exception as ex:
+            file.close()
+            raise Exception(ex)
+
 class Repo:
 
     def __init__(self, *items):
@@ -27,19 +56,17 @@ class Repo:
             i += 1
         return i
 
-    #--------------------------
+    def index_of(self, item):
+        return self.get_items().index(item)
 
+    def replace(self, x, y):
+        self.get_items()[self.index_of(x)] = y
 
-
-class FileRepo(Repo):
-    import json
+class FileRepo(Repo, JsonSaver):
 
     def __init__(self, file_name, *items):
         self._items = [item for item in items]
         self._file_name = file_name
-
-    def get_file_name(self):
-        return self._file_name
 
     def add(self, item):
         """
@@ -56,6 +83,13 @@ class FileRepo(Repo):
             self.update_file()
         except Exception as ex:
             raise Exception(ex)
+        
+    def replace(self, x, y):
+        Repo.replace(self, x, y)
+        try:
+            self.update_file()
+        except Exception as ex:
+            raise Exception(ex)
 
     def update_file(self):
         """
@@ -65,17 +99,31 @@ class FileRepo(Repo):
             Exception: file not updated
         """
         try:
-            file = open(self.get_file_name(), "w")
             item_list = []
             for item in self.get_items():
                 item_dict = item.make_dict()
                 item_list.append(item_dict)
-            file_json = self.json.dumps(item_list, indent = 5)
-            file.write(file_json)
-            file.close()
+            self.write_to_file(item_list)
         except Exception as ex:
-            file.close()
             raise Exception(ex)
+
+class IdRepo(Repo):
+
+    def __init__(self, *items):
+        self._items = [item for item in items]
+
+    def get_item_with_id_value(self, id):
+        id_items = self.get_items()
+        for id_item in id_items:
+            if id_item.get_id().get_value() == id:
+                return id_item
+        raise Exception("No person with the given id!")
+
+class IdFileRepo(IdRepo, FileRepo):
+
+    def __init__(self, file_name, *items):
+        self._items = [item for item in items]
+        self._file_name = file_name
 
 class CommandsRepo(Repo):
 

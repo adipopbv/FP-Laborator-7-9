@@ -90,8 +90,8 @@ class Service:
         """
         try:
             person = self.create_person(id, name, self.create_adress(city, street, number))
-            self.get_validator().validate_person(person)
-            self.get_persons().add(person)
+            self.get_validator().validate_person(repo, person)
+            repo.add(person)
             return repo
         except Exception as ex:
             raise Exception(ex)
@@ -99,8 +99,18 @@ class Service:
     def add_event_to_repo(self, repo, id, day, month, year, hours, minutes, description):
         try:
             event = self.create_event(id, self.create_date(day, month, year), self.create_duration(hours, minutes), description)
-            self.get_validator().validate_event(event)
-            self.get_events().add(event)
+            self.get_validator().validate_event(repo, event)
+            repo.add(event)
+            return repo
+        except Exception as ex:
+            raise Exception(ex)
+
+    def modify_person_from_repo(self, repo, search_id, id, name, city, street, number):
+        try:
+            person1 = self.get_persons().get_item_with_id_value(search_id)
+            person2 = self.create_person(id, name, self.create_adress(city, street, number))
+            self.get_validator().validate_person(repo, person2)
+            repo.replace(person1, person2)
             return repo
         except Exception as ex:
             raise Exception(ex)

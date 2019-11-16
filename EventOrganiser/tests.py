@@ -82,6 +82,7 @@ class Tests:
 
     class ValidatorTest:
         from framework.validators import Validator
+        from framework.repos import IdRepo
         from domain.entities import Id, Name, CityName, StreetName, Number, Adress, Person
 
         def run_all(self):
@@ -90,14 +91,16 @@ class Tests:
         def validate_person_test(self):
             validator = self.Validator()
             person = self.Person(self.Id("123"), self.Name("kajner"), self.Adress(self.CityName("hkuygdkf"), self.StreetName("knwjv"), self.Number("51")))
+            repo = self.IdRepo()
             try:
-                validator.validate_person(person)
+                validator.validate_person(repo, person)
                 assert True
             except:
                 assert False
-            person = self.Person(self.Id(123), self.Name("kajner"), self.Adress(self.CityName("hkuygdkf"), self.StreetName(2314), self.Number(1)))
+            person = self.Person(self.Id("123"), self.Name("kajner"), self.Adress(self.CityName("hkuygdkf"), self.StreetName(2314), self.Number(1)))
+            repo.add(person)
             try:
-                validator.validate_person(person)
+                validator.validate_person(repo, person)
                 assert False
             except:
                 assert True
