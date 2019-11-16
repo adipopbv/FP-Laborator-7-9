@@ -12,6 +12,7 @@ class Tests:
             self.add_person_to_repo_test()
             self.add_event_to_repo_test()
             self.modify_person_from_repo_test()
+            self.modify_event_from_repo_test()
 
         def create_adress_test(self):
             persons = self.IdRepo()
@@ -63,9 +64,22 @@ class Tests:
             person2 = service.create_person("2", "yaBoi", service.create_adress("cluj-napoca", "dorobantilor", "3"))
             service.get_persons().add(person1)
             service.modify_person_from_repo(persons, "1", "2", "yaBoi", "cluj-napoca", "dorobantilor", "3")
-            ceva = service.get_persons().get_item_with_id_value("2")
-            assert ceva == person2
-            assert not ceva == person1
+            person = service.get_persons().get_item_with_id_value("2")
+            assert person == person2
+            assert not person == person1
+
+        def modify_event_from_repo_test(self):
+            persons = self.IdRepo()
+            events = self.IdRepo()
+            validator = self.Validator()
+            service = self.Service(persons, events, validator)
+            event1 = service.create_event("1", service.create_date("1", "1", "2000"), service.create_duration("3", "35"), "best party")
+            event2 = service.create_event("2", service.create_date("15", "12", "2019"), service.create_duration("4", "45"), "best parteee")
+            service.get_events().add(event1)
+            service.modify_event_from_repo(events, "1", "2", "15", "12", "2019", "4", "45", "best parteee")
+            event = service.get_events().get_item_with_id_value("2")
+            assert event == event2
+            assert not event == event1
 
     class CommandsRepoTest:
         from framework.repos import CommandsRepo
