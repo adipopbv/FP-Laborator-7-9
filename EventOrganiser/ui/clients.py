@@ -135,6 +135,9 @@ class Client:
             self.write_exception(ex)
 
     def modify_event_from_repo(self):
+        """
+        reads an id and a event's new data to change to
+        """
         try:
             self.write("Please input an event's id:")
             self.get_service().modify_event_from_repo(
