@@ -184,3 +184,33 @@ class Service:
             return repo
         except Exception as ex:
             raise Exception(ex)
+
+    def modify_event_from_repo(self, repo, search_id, id, day, month, year, hours, minutes, description):
+        """
+        modifies event with the given id to the given data in repo
+        
+        Args:
+            repo (IdRepo): a repo
+            search_id (str): an id
+            id (str): an id
+            day (str): a day
+            month (str): a month
+            year (str): a year
+            hours (str): number of hours
+            minutes (str): number of minutes
+            description (str): a description
+        
+        Raises:
+            Exception: no event with id / invalid event
+        
+        Returns:
+            IdRepo: newly modified repo
+        """
+        try:
+            event1 = self.get_events().get_item_with_id_value(search_id)
+            event2 = self.create_event(id, self.create_date(day, month, year), self.create_duration(hours, minutes), description)
+            self.get_validator().validate_event(repo, event2)
+            repo.replace(event1, event2)
+            return repo
+        except Exception as ex:
+            raise Exception(ex)

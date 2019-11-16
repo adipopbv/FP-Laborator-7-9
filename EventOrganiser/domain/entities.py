@@ -253,6 +253,19 @@ class Event(Entity):
         self._duration = duration
         self._description = description
 
+    def __eq__(self, other):
+        if (
+            self.get_id().get_value() == other.get_id().get_value() and
+            self.get_date().get_day().get_value() == other.get_date().get_day().get_value() and
+            self.get_date().get_month().get_value() == other.get_date().get_month().get_value() and
+            self.get_date().get_year().get_value() == other.get_date().get_year().get_value() and
+            self.get_duration().get_hours().get_value() == other.get_duration().get_hours().get_value() and
+            self.get_duration().get_minutes().get_value() == other.get_duration().get_minutes().get_value() and
+            self.get_description().get_value() == other.get_description().get_value()
+        ):
+            return True
+        return False
+
     def get_id(self):
         return self._id
 
