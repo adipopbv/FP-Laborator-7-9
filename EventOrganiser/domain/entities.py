@@ -1,6 +1,12 @@
 class Entity:
 
     def make_dict(self):
+        """
+        makes a dictionary from its fields
+        
+        Returns:
+            dict: a dictionary
+        """
         return {}
 
 class Field(Entity):
@@ -12,6 +18,12 @@ class Field(Entity):
         return self._value
 
     def make_dict(self):
+        """
+        makes a dictionary from its fields
+        
+        Returns:
+            dict: a dictionary
+        """
         return {"value": self.get_value()}
 
 class Id(Field):
@@ -57,6 +69,12 @@ class Command(Entity):
         return self._function
 
     def make_dict(self):
+        """
+        makes a dictionary from its fields
+        
+        Returns:
+            dict: a dictionary
+        """
         dictionary = {
             "id": self.get_id().make_dict(),
             "function": self.get_function().make_dict()
@@ -88,6 +106,12 @@ class Adress(Entity):
         return self._number
 
     def make_dict(self):
+        """
+        makes a dictionary from its fields
+        
+        Returns:
+            dict: a dictionary
+        """
         dictionary = {
             "city_name": self.get_city_name().make_dict(),
             "street_name": self.get_street_name().make_dict(),
@@ -112,6 +136,12 @@ class Person(Entity):
         return self._adress  
 
     def make_dict(self):
+        """
+        makes a dictionary from its fields
+        
+        Returns:
+            dict: a dictionary
+        """
         dictionary = {
             "id": self.get_id().make_dict(),
             "name": self.get_name().make_dict(),

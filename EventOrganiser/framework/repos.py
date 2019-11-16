@@ -7,9 +7,21 @@ class Repo:
         return self._items
 
     def add(self, item):
+        """
+        adds an item to the list
+        
+        Args:
+            item (Entity): an item
+        """
         self.get_items().append(item)
 
     def count(self):
+        """
+        gets the number of items in the list
+        
+        Returns:
+            int: number of items in list
+        """
         i = 0
         for item in self.get_items():
             i += 1
@@ -30,15 +42,28 @@ class FileRepo(Repo):
         return self._file_name
 
     def add(self, item):
+        """
+        adds an item to the list and updates the file
+        
+        Args:
+            item (Entity): an item
+        
+        Raises:
+            Exception: file not updated
+        """
         Repo.add(self, item)
         try:
             self.update_file()
         except Exception as ex:
             raise Exception(ex)
 
-    #-------------------------------------
-
     def update_file(self):
+        """
+        updates the json file
+        
+        Raises:
+            Exception: file not updated
+        """
         try:
             file = open(self.get_file_name(), "w")
             item_list = []
