@@ -1,10 +1,19 @@
 class Repo:
 
     def __init__(self, *items):
-        self._items = items
+        self._items = [item for item in items]
 
     def get_items(self):
         return self._items
+
+    def add(self, item):
+        self.get_items().append(item)
+
+    def count(self):
+        i = 0
+        for item in self.get_items():
+            i += 1
+        return i
 
     #--------------------------
 

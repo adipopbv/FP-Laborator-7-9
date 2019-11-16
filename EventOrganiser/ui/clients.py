@@ -60,6 +60,9 @@ class Client:
         """
         self.get_gui().write(message)
 
+    def write_success(self):
+        self.write("Operation successful!")
+
     def write_exception(self, exception):
         """
         writes exception to the user
@@ -75,7 +78,19 @@ class Client:
         """
         reads and adds a person to the repo
         """
-        pass
+        try:
+            self.write("Please input a person:")
+            self.get_service().add_person_to_repo(
+                self.get_service().get_persons(), 
+                self.read("ID: "),  
+                self.read("Name: "),
+                self.read("Adress \n    City: "),
+                self.read("    Street: "),
+                self.read("    Number: ")
+            )
+            self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
 
     def run(self):
         """
