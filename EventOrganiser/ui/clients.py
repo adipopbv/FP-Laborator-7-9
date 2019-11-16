@@ -95,6 +95,9 @@ class Client:
             self.write_exception(ex)
 
     def add_event_to_repo(self):
+        """
+        reads and adds an event to the repo
+        """
         try:
             self.write("Please input an event:")
             self.get_service().add_event_to_repo(
@@ -112,6 +115,9 @@ class Client:
             self.write_exception(ex)
 
     def modify_person_from_repo(self):
+        """
+        reads an id and a person's new data to change to
+        """
         try:
             self.write("Please input a person's id:")
             self.get_service().modify_person_from_repo(

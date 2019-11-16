@@ -8,6 +8,15 @@ class JsonSaver:
         return self._file_name
 
     def write_to_file(self, data):
+        """
+        writes the given data to json file
+        
+        Args:
+            data (base types): data to be written to json
+        
+        Raises:
+            Exception: no file with the given name
+        """
         try:
             file = open(self.get_file_name(), "w")
             data = self.json.dumps(data, indent = 4)
@@ -18,6 +27,15 @@ class JsonSaver:
             raise Exception(ex)
 
     def append_to_file(self, data):
+        """
+        appends the given data to json file
+        
+        Args:
+            data (base types): data to be appended to json
+        
+        Raises:
+            Exception: no file with the given name
+        """
         try:
             file = open(self.get_file_name(), "a")
             data = ",\n" + self.json.dumps(data, indent = 4)
@@ -57,9 +75,25 @@ class Repo:
         return i
 
     def index_of(self, item):
+        """
+        gets the index of item in list
+        
+        Args:
+            item (Entity): an item
+        
+        Returns:
+            int: index of item
+        """
         return self.get_items().index(item)
 
     def replace(self, x, y):
+        """
+        replaces x with y
+        
+        Args:
+            x (Entity): item to be replaced
+            y (Entity): item to replace with
+        """
         self.get_items()[self.index_of(x)] = y
 
 class FileRepo(Repo, JsonSaver):
@@ -85,6 +119,16 @@ class FileRepo(Repo, JsonSaver):
             raise Exception(ex)
         
     def replace(self, x, y):
+        """
+        replaces x with y and updates the file
+        
+        Args:
+            x (Entity): item to be replaced
+            y (Entity): item to replace with
+        
+        Raises:
+            Exception: file not updated
+        """
         Repo.replace(self, x, y)
         try:
             self.update_file()
@@ -113,11 +157,23 @@ class IdRepo(Repo):
         self._items = [item for item in items]
 
     def get_item_with_id_value(self, id):
+        """
+        gets item with the given value of id
+        
+        Args:
+            id (str): an id
+        
+        Raises:
+            Exception: no entity with the given id
+        
+        Returns:
+            Entity: an item
+        """
         id_items = self.get_items()
         for id_item in id_items:
             if id_item.get_id().get_value() == id:
                 return id_item
-        raise Exception("No person with the given id!")
+        raise Exception("No entity with the given id!")
 
 class IdFileRepo(IdRepo, FileRepo):
 
