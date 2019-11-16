@@ -4,16 +4,18 @@ class Tests:
         from business.services import Service
         from domain.entities import Id, Name, CityName, StreetName, Number, Adress, Person
         from framework.validators import Validator
-        from framework.repos import Repo
+        from framework.repos import IdRepo
 
         def run_all(self):
             self.create_adress_test()
             self.creare_person_test()
             self.add_person_to_repo_test()
+            self.add_event_to_repo_test()
+            self.modify_person_from_repo_test()
 
         def create_adress_test(self):
-            persons = self.Repo()
-            events = self.Repo()
+            persons = self.IdRepo()
+            events = self.IdRepo()
             validator = self.Validator()
             service = self.Service(persons, events, validator)
             adress = service.create_adress("cluj", "dorobantilor", "123")
@@ -22,8 +24,8 @@ class Tests:
             assert adress.get_number().get_value() == "123"
 
         def creare_person_test(self):
-            persons = self.Repo()
-            events = self.Repo()
+            persons = self.IdRepo()
+            events = self.IdRepo()
             validator = self.Validator()
             service = self.Service(persons, events, validator)
             adress = service.create_adress("cluj", "dorobantilor", "123")
@@ -35,13 +37,35 @@ class Tests:
             assert person.get_adress().get_number().get_value() == "123"
 
         def add_person_to_repo_test(self):
-            persons = self.Repo()
-            events = self.Repo()
+            persons = self.IdRepo()
+            events = self.IdRepo()
             validator = self.Validator()
             service = self.Service(persons, events, validator)
             service.add_person_to_repo(persons, "1", "cineva", "cluj", "dorobantilor", "123")
             assert service.get_persons().count() == 1
             assert not service.get_persons().count() == 0
+
+        def add_event_to_repo_test(self):
+            events = self.IdRepo()
+            events = self.IdRepo()
+            validator = self.Validator()
+            service = self.Service(events, events, validator)
+            service.add_event_to_repo(events, "1", "1", "1", "2000", "02", "35", "best party")
+            assert service.get_events().count() == 1
+            assert not service.get_events().count() == 0
+
+        def modify_person_from_repo_test(self):
+            persons = self.IdRepo()
+            events = self.IdRepo()
+            validator = self.Validator()
+            service = self.Service(persons, events, validator)
+            person1 = service.create_person("1", "maBoi", service.create_adress("cluj", "doro", "2"))
+            person2 = service.create_person("2", "yaBoi", service.create_adress("cluj-napoca", "dorobantilor", "3"))
+            service.get_persons().add(person1)
+            service.modify_person_from_repo(persons, "1", "2", "yaBoi", "cluj-napoca", "dorobantilor", "3")
+            ceva = service.get_persons().get_item_with_id_value("2")
+            assert ceva == person2
+            assert not ceva == person1
 
     class CommandsRepoTest:
         from framework.repos import CommandsRepo
