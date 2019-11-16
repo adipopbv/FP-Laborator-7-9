@@ -12,6 +12,7 @@ class Client:
             Command(Id("2"), Function(self.add_event_to_repo)),
             Command(Id("3"), Function(self.modify_person_from_repo)),
             Command(Id("4"), Function(self.modify_event_from_repo)),
+            Command(Id("5"), Function(self.search_person_in_repo))
         )
 
     def get_service(self):
@@ -65,6 +66,15 @@ class Client:
 
     def write_success(self):
         self.write("Operation successful!")
+
+    def write_person(self, person):
+        self.write("The requested person is:")
+        self.write("Id: " + person.get_id().get_value())
+        self.write("Name: " + person.get_name().get_value())
+        self.write("Adress")
+        self.write("    City: " + person.get_adress().get_city_name().get_value())
+        self.write("    Street: " + person.get_adress().get_street_name().get_value())
+        self.write("    Number: " + person.get_adress().get_number().get_value())
 
     def write_exception(self, exception):
         """
@@ -152,6 +162,17 @@ class Client:
                 self.read("Description: ")
             )
             self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
+
+    def search_person_in_repo(self):
+        try:
+            self.write("Please input a person's id:")
+            person = self.get_service().search_person_in_repo(
+                self.get_service().get_persons(),
+                self.read("Id: ")
+            )
+            self.write_person(person)
         except Exception as ex:
             self.write_exception(ex)
 

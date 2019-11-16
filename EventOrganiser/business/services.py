@@ -214,3 +214,10 @@ class Service:
             return repo
         except Exception as ex:
             raise Exception(ex)
+
+    def search_person_in_repo(self, repo, id):
+        try:
+            person = self.get_persons().get_item_with_id_value(id)
+            return person
+        except Exception as ex:
+            raise Exception(ex)
