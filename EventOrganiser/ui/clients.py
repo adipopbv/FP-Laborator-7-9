@@ -8,6 +8,7 @@ class Client:
         self._service = service
         self._gui = Console()
         self._commands = CommandsRepo(
+            Command(Id("0"), Function(self.exit_app)),
             Command(Id("1"), Function(self.add_person_to_repo)),
             Command(Id("2"), Function(self.add_event_to_repo)),
             Command(Id("3"), Function(self.modify_person_from_repo)),
@@ -184,6 +185,10 @@ class Client:
             self.write_person(person)
         except Exception as ex:
             self.write_exception(ex)
+
+    def exit_app(self):
+        self.write("Application exit...")
+        exit()
 
     def run(self):
         """
