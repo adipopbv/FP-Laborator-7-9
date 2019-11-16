@@ -11,6 +11,7 @@ class Client:
             Command(Id("1"), Function(self.add_person_to_repo)),
             Command(Id("2"), Function(self.add_event_to_repo)),
             Command(Id("3"), Function(self.modify_person_from_repo)),
+            Command(Id("4"), Function(self.modify_event_from_repo)),
         )
 
     def get_service(self):
@@ -128,6 +129,24 @@ class Client:
                 self.read("Adress \n    City: "),
                 self.read("    Street: "),
                 self.read("    Number: ")
+            )
+            self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
+
+    def modify_event_from_repo(self):
+        try:
+            self.write("Please input an event's id:")
+            self.get_service().modify_event_from_repo(
+                self.get_service().get_events(),
+                self.read("Id: "),
+                self.read("Please input the modified event's data:\nId: "),
+                self.read("Date \n    Day: "),
+                self.read("    Month: "),
+                self.read("    Year: "),
+                self.read("Duration \n    Hours: "),
+                self.read("    Minutes: "),
+                self.read("Description: ")
             )
             self.write_success()
         except Exception as ex:

@@ -184,3 +184,13 @@ class Service:
             return repo
         except Exception as ex:
             raise Exception(ex)
+
+    def modify_event_from_repo(self, repo, search_id, id, day, month, year, hours, minutes, description):
+        try:
+            event1 = self.get_events().get_item_with_id_value(search_id)
+            event2 = self.create_event(id, self.create_date(day, month, year), self.create_duration(hours, minutes), description)
+            self.get_validator().validate_event(repo, event2)
+            repo.replace(event1, event2)
+            return repo
+        except Exception as ex:
+            raise Exception(ex)
