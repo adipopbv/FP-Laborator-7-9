@@ -13,7 +13,8 @@ class Client:
             Command(Id("2"), Function(self.add_event_to_repo)),
             Command(Id("3"), Function(self.modify_person_from_repo)),
             Command(Id("4"), Function(self.modify_event_from_repo)),
-            Command(Id("5"), Function(self.search_person_in_repo))
+            Command(Id("5"), Function(self.search_person_in_repo)),
+            Command(Id("6"), Function(self.search_event_in_repo))
         )
 
     def get_service(self):
@@ -70,7 +71,7 @@ class Client:
 
     def write_person(self, person):
         """
-        writes a persons data to the user
+        writes a person's data to the user
         
         Args:
             person (Person): a person
@@ -82,6 +83,24 @@ class Client:
         self.write("    City: " + person.get_adress().get_city_name().get_value())
         self.write("    Street: " + person.get_adress().get_street_name().get_value())
         self.write("    Number: " + person.get_adress().get_number().get_value())
+
+    def write_event(self, event):
+        """
+        writes an event's data to the user
+        
+        Args:
+            event (Event): an event
+        """
+        self.write("The requested event is:")
+        self.write("Id: " + event.get_id().get_value())
+        self.write("Date")
+        self.write("    Day: " + event.get_date().get_day().get_value())
+        self.write("    Day: " + event.get_date().get_month().get_value())
+        self.write("    Day: " + event.get_date().get_year().get_value())
+        self.write("Duration")
+        self.write("    Hours: " + event.get_duration().get_hours().get_value())
+        self.write("    Minutes: " + event.get_duration().get_minutes().get_value())
+        self.write("Description: " + event.get_description().get_value())
 
     def write_exception(self, exception):
         """
@@ -183,6 +202,20 @@ class Client:
                 self.read("Id: ")
             )
             self.write_person(person)
+        except Exception as ex:
+            self.write_exception(ex)
+
+    def search_event_in_repo(self):
+        """
+        searches a event by id
+        """
+        try:
+            self.write("Please input an event's id:")
+            event = self.get_service().search_event_in_repo(
+                self.get_service().get_events(),
+                self.read("Id: ")
+            )
+            self.write_event(event)
         except Exception as ex:
             self.write_exception(ex)
 

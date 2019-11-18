@@ -234,3 +234,23 @@ class Service:
             return person
         except Exception as ex:
             raise Exception(ex)
+
+    def search_event_in_repo(self, repo, id):
+        """
+        searches for event in repo by id
+        
+        Args:
+            repo (IdRepo): a repo
+            id (str): an id
+        
+        Raises:
+            Exception: no event with id
+        
+        Returns:
+            Event: a event
+        """
+        try:
+            event = self.get_events().get_item_with_id_value(id)
+            return event
+        except Exception as ex:
+            raise Exception(ex)
