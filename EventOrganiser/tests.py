@@ -95,7 +95,7 @@ class Tests:
         def search_event_in_repo_test(self):
             events = self.IdRepo()
             validator = self.Validator()
-            service = self.Service(events, None, validator)
+            service = self.Service(None, events, validator)
             event = service.create_event("1", service.create_date("1", "1", "2019"), service.create_duration("02", "35"), "best party ever")
             service.get_events().add(event)
             assert service.search_event_in_repo(service.get_events(), "1") == event
