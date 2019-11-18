@@ -14,6 +14,7 @@ class Tests:
             self.modify_person_from_repo_test()
             self.modify_event_from_repo_test()
             self.search_person_in_repo_test()
+            self.search_event_in_repo_test()
 
         def create_adress_test(self):
             persons = self.IdRepo()
@@ -90,6 +91,15 @@ class Tests:
             service.get_persons().add(person)
             assert service.search_person_in_repo(service.get_persons(), "1") == person
             assert not service.search_person_in_repo(service.get_persons(), "1") != person
+
+        def search_event_in_repo_test(self):
+            events = self.IdRepo()
+            validator = self.Validator()
+            service = self.Service(None, events, validator)
+            event = service.create_event("1", service.create_date("1", "1", "2019"), service.create_duration("02", "35"), "best party ever")
+            service.get_events().add(event)
+            assert service.search_event_in_repo(service.get_events(), "1") == event
+            assert not service.search_event_in_repo(service.get_events(), "1") != event
 
     class CommandsRepoTest:
         from framework.repos import CommandsRepo
