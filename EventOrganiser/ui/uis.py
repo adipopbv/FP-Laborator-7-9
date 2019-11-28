@@ -63,7 +63,7 @@ class ConsoleUI:
         return self.gui.read(prompt)
 
     def read_command(self):
-        input_key = self.read("Please input a command: ")
+        input_key = self.read("\nPlease input a command: ")
         try:
             return self.commands_service.get_command_with_key(input_key)
         except Exception as ex:
@@ -71,7 +71,7 @@ class ConsoleUI:
             return self.read_command()
 
     def read_person(self):
-        self.write("Please input a person's data: ")
+        self.write("\nPlease input a person's data: ")
         person = Person(
             self.read("Id: "),
             self.read("Name: "),
@@ -84,7 +84,7 @@ class ConsoleUI:
         return person
 
     def read_event(self):
-        self.write("Please input an event's data: ")
+        self.write("\nPlease input an event's data: ")
         person = Event(
             self.read("Id: "),
             Date(
@@ -100,19 +100,48 @@ class ConsoleUI:
     def write(self, message):
         self.gui.write(message)
 
+    def write_person(self, person: Person):
+        self.write("---------------")
+        self.write("Id: " + str(person.id))
+        self.write("Name: " + str(person.name))
+        self.write("Address\n    City: " + str(person.address.city))
+        self.write("    Street: " + str(person.address.street))
+        self.write("    Number: " + str(person.address.number))
+
+    def write_persons(self, persons: list):
+        self.write("The requested persons:")
+        for person in persons:
+            self.write_person(person)
+
+    def write_event(self, event: Event):
+        self.write("---------------")
+        self.write("Id: " + str(event.id))
+        self.write("Date\n    Day: " + str(event.date.day))
+        self.write("    Month: " + str(event.date.month))
+        self.write("    Year: " + str(event.date.year))
+        self.write("Duration: " + str(event.duration))
+        self.write("Description: " + str(event.description))
+
+    def write_events(self, events: list):
+        self.write("The requested events:")
+        for event in events:
+            self.write_event(event)
+
     def write_success(self):
-        self.write("Operation successful!")
+        self.write("\nOperation successful!")
 
     def write_exception(self, exception):
-        self.gui.write("Error: " + str(exception) + ".\nOperation failed!")
+        self.gui.write("\nError: " + str(exception) + ".\nOperation failed!")
 
     def write_menu(self):
-        self.write("Event Organiser commands:")
+        self.write("\nEvent Organiser commands:")
         for command in self.commands_service.repo.items:
             keys = ""
             for key in command.keys:
                 keys += str(key) + "/"
             self.write(" - [" + str(keys[0:-1]) + "]: " + command.description)
+
+    #----------------------------------------------
 
     def add_person(self):
         try:
@@ -130,8 +159,54 @@ class ConsoleUI:
         except Exception as ex:
             self.write_exception(ex)
 
+    def modify_person(self):
+        try:
+            self.write("\nPerson to modify:")
+            field = self.read("    Please input a field to search by: ")
+            field_value = self.read("    Please input the value: ")
+            self.write("\nModified person:")
+            modified_person = self.read_person()
+            self.persons_service.modify_person(field, field_value, modified_person)
+            self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
+
+    def modify_event(self):
+        try:
+            self.write("\nEvent to modify:")
+            field = self.read("Please input a field to search by: ")
+            field_value = self.read("Please input the value: ")
+            self.write("\nModified event:")
+            modified_event = self.read_event()
+            self.events_service.modify_event(field, field_value, modified_event)
+            self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
+
+    def search_person(self):
+        try:
+            self.write("\nPerson to search:")
+            field = self.read("    Please input a field to search by: ")
+            field_value = self.read("    Please input the value: ")
+            persons = self.persons_service.search_person(field, field_value)
+            self.write_persons(persons)
+        except Exception as ex:
+            self.write_exception(ex)
+
+    def search_event(self):
+        try:
+            self.write("\nEvent to search:")
+            field = self.read("    Please input a field to search by: ")
+            field_value = self.read("    Please input the value: ")
+            events = self.events_service.search_event(field, field_value)
+            self.write_events(events)
+        except Exception as ex:
+            self.write_exception(ex)
+
     def exit_application(self):
         exit()
+
+    #----------------------------------------------
 
     def run_application(self):
         while True:

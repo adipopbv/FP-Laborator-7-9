@@ -18,8 +18,20 @@ class Repo:
     def __init__(self, items: list):
         self.items = items
 
+    def index_of(self, entity):
+        try:
+            return self.items.index(entity)
+        except:
+            raise Exception("Item not found in repo")
+
     def add(self, entity):
         self.items.append(entity)
+
+    def modify(self, old_entity, new_entity):
+        try:
+            self.items[self.index_of(old_entity)] = new_entity
+        except Exception as ex:
+            raise Exception(ex)
 
 
 class FileRepo(Repo, JsonSaver):
@@ -78,6 +90,17 @@ class CommandFileRepo(FileRepo):
 
 class PersonFileRepo(FileRepo):
 
+    def get_person_with_field_value(self, field, value):
+        if field != "address":
+            for person in self.items:
+                try:
+                    if getattr(person, field) == value:
+                        return person
+                except:
+                    if getattr(person.address, field) == value:
+                        return person
+        raise Exception("No person with given field value")
+
     def load_from_json(self):
         file = open(self.file_name, "r")
         try:
@@ -104,6 +127,17 @@ class PersonFileRepo(FileRepo):
 
 
 class EventFileRepo(FileRepo):
+
+    def get_event_with_field_value(self, field, value):
+        if field != "date":
+            for event in self.items:
+                try:
+                    if getattr(event, field) == value:
+                        return event
+                except:
+                    if getattr(event.date, field) == value:
+                        return event
+        raise Exception("No event with given field value")
 
     def load_from_json(self):
         file = open(self.file_name, "r")

@@ -99,6 +99,17 @@ class Person(Entity):
             "address": self.address.to_json()
         }
 
+    def has_field_with_value(self, field, field_value):
+        try:
+            try:
+                if getattr(self, field) == field_value:
+                    return True
+            except:
+                if getattr(self.address, field) == field_value:
+                    return True
+        except:
+            return False
+
 
 class Event(Entity):
 
@@ -141,6 +152,17 @@ class Event(Entity):
             "duration": self.duration,
             "description": self.description
         }
+
+    def has_field_with_value(self, field, field_value):
+        try:
+            try:
+                if getattr(self, field) == field_value:
+                    return True
+            except:
+                if getattr(self.date, field) == field_value:
+                    return True
+        except:
+            return False
 
 
 class Attendance:

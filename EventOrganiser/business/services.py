@@ -1,4 +1,4 @@
-from EventOrganiser.framework.repos import FileRepo, CommandFileRepo
+from EventOrganiser.framework.repos import FileRepo, CommandFileRepo, PersonFileRepo, EventFileRepo, AttendanceFileRepo
 
 
 class Service:
@@ -38,9 +38,11 @@ class CommandsService(Service):
 class PersonService(Service):
     from EventOrganiser.domain.entities import Person
 
+    _repo: PersonFileRepo
+
     #---------------------------
 
-    def __init__(self, persons):
+    def __init__(self, persons: PersonFileRepo):
         super().__init__(persons)
         self.repo.load_from_json()
 
@@ -48,6 +50,20 @@ class PersonService(Service):
         try:
             self.repo.add(person)
             self.repo.save_to_json()
+        except Exception as ex:
+            raise Exception(ex)
+
+    def modify_person(self, field, field_value, modified_person):
+        try:
+            self.repo.modify(self.repo.get_person_with_field_value(field, field_value), modified_person)
+            self.repo.save_to_json()
+        except Exception as ex:
+            raise Exception(ex)
+
+    def search_person(self, field, field_value):
+        try:
+            persons = [person for person in self.repo.items if person.has_field_with_value(field, field_value)]
+            return persons
         except Exception as ex:
             raise Exception(ex)
 
@@ -59,6 +75,7 @@ class EventService(Service):
 
     def __init__(self, events):
         super().__init__(events)
+        self.repo.load_from_json()
 
     def add_event(self, event: Event):
         try:
@@ -68,6 +85,20 @@ class EventService(Service):
             raise Exception(ex)
         self.repo.save_to_json()
 
+    def modify_event(self, field, field_value, modified_event):
+        try:
+            self.repo.modify(self.repo.get_event_with_field_value(field, field_value), modified_event)
+            self.repo.save_to_json()
+        except Exception as ex:
+            raise Exception(ex)
+
+    def search_event(self, field, field_value):
+        try:
+            events = [event for event in self.repo.items if event.has_field_with_value(field, field_value)]
+            return events
+        except Exception as ex:
+            raise Exception(ex)
+
 
 class AttendanceService(Service):
     from EventOrganiser.domain.entities import Attendance
@@ -76,3 +107,4 @@ class AttendanceService(Service):
 
     def __init__(self, attendances):
         super().__init__(attendances)
+        self.repo.load_from_json()
