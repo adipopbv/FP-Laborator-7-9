@@ -1,4 +1,4 @@
-class Console:
+class ConsoleGUI:
 
     def read(self, prompt):
         return input(prompt)

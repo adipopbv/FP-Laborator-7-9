@@ -1,16 +1,17 @@
-from ui.clients import Client
-from business.services import Service
-from framework.repos import IdRepo, IdFileRepo
-from framework.validators import Validator
-from tests import Tests
+from EventOrganiser.business.services import CommandsService, PersonService, EventService, AttendanceService
+from EventOrganiser.framework.repos import CommandFileRepo, PersonFileRepo, EventFileRepo, AttendanceFileRepo
+from EventOrganiser.ui.uis import ConsoleUI
 
-tests = Tests()
-persons = IdFileRepo("persons.json")
-#events = Repo()
-events = IdFileRepo("events.json")
-validator = Validator()
-service = Service(persons, events, validator)
-client = Client(service)
+commands = CommandFileRepo("commands.json", [])
+persons = PersonFileRepo("persons.json", [])
+events = EventFileRepo("events.json", [])
+attendances = AttendanceFileRepo("attendances.json", [])
 
-tests.run_all()
-client.run()
+commands_service = CommandsService(commands)
+persons_service = PersonService(persons)
+events_service = EventService(events)
+attendances_service = AttendanceService(attendances)
+
+ui = ConsoleUI(commands_service, persons_service, events_service, attendances_service)
+
+ui.run_application()
