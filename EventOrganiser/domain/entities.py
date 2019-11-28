@@ -1,294 +1,147 @@
-class Entity:
+from EventOrganiser.domain.fields import Address, Date
+from EventOrganiser.framework.json_tools import JsonFormattable
 
-    def make_dict(self):
-        """
-        makes a dictionary from its fields
-        
-        Returns:
-            dict: a dictionary
-        """
-        return {}
 
-class Field(Entity):
+class Command(JsonFormattable):
 
-    def __init__(self, value):
-        self._value = value
+    _keys: list
+    @property
+    def keys(self):
+        return self._keys
+    @keys.setter
+    def keys(self, value):
+        self._keys = value
 
-    def get_value(self):
-        return self._value
-
-    def make_dict(self):
-        """
-        makes a dictionary from its fields
-        
-        Returns:
-            dict: a dictionary
-        """
-        return {"value": self.get_value()}
-
-class Id(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Name(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class CityName(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class StreetName(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Number(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Day(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Month(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Year(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Hours(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Minutes(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Description(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Function(Field):
-
-    def __init__(self, value):
-        Field.__init__(self, value)
-
-class Adress(Entity):
-
-    def __init__(self, city_name, street_name, number):
-        self._city_name = city_name
-        self._street_name = street_name
-        self._number = number
-
-    def get_city_name(self):
-        return self._city_name
-
-    def get_street_name(self):
-        return self._street_name
-
-    def get_number(self):
-        return self._number
-
-    def make_dict(self):
-        """
-        makes a dictionary from its fields
-        
-        Returns:
-            dict: a dictionary
-        """
-        dictionary = {
-            "city_name": self.get_city_name().make_dict(),
-            "street_name": self.get_street_name().make_dict(),
-            "number": self.get_number().make_dict()
-        }
-        return dictionary
-
-class Date(Entity):
-
-    def __init__(self, day, month, year):
-        self._day = day
-        self._month = month
-        self._year = year
-
-    def get_day(self):
-        return self._day
-
-    def get_month(self):
-        return self._month
-
-    def get_year(self):
-        return self._year
-
-    def make_dict(self):
-        """
-        makes a dictionary from its fields
-        
-        Returns:
-            dict: a dictionary
-        """
-        dictionary = {
-            "day": self.get_day().make_dict(),
-            "month": self.get_month().make_dict(),
-            "year": self.get_year().make_dict()
-        }
-        return dictionary
-
-class Duration(Entity):
-
-    def __init__(self, hours, minutes):
-        self._hours = hours
-        self._minutes = minutes
-
-    def get_hours(self):
-        return self._hours
-
-    def get_minutes(self):
-        return self._minutes
-
-    def make_dict(self):
-        """
-        makes a dictionary from its fields
-        
-        Returns:
-            dict: a dictionary
-        """
-        dictionary = {
-            "hours": self.get_hours().make_dict(),
-            "minutes": self.get_minutes().make_dict()
-        }
-        return dictionary
-
-class Command(Entity):
-
-    def __init__(self, id, function):
-        self._id = id
-        self._function = function
-
-    def get_id(self):
-        return self._id
-
-    def get_function(self):
+    _function: str
+    @property
+    def function(self):
         return self._function
+    @function.setter
+    def function(self, value):
+        self._function = value
 
-    def make_dict(self):
-        """
-        makes a dictionary from its fields
-        
-        Returns:
-            dict: a dictionary
-        """
-        dictionary = {
-            "id": self.get_id().make_dict(),
-            "function": self.get_function().make_dict()
+    _description: str
+    @property
+    def description(self):
+        return self._description
+    @description.setter
+    def description(self, value):
+        self._description = value
+
+    #-----------------------------------
+
+    def __init__(self, function: str, description: str, keys: list):
+        self.keys = keys
+        self.function = function
+        self.description = description
+
+    def run(self, instance_obj):
+        getattr(instance_obj, self.function)()
+
+    def to_json(self):
+        return {
+            "keys": self.keys,
+            "function": self.function,
+            "description": self.description
         }
-        return dictionary
 
-    #--------------------------------
 
-    def run(self):
-        """
-        runs the function
-        """
-        self.get_function().get_value()()
+class Entity(JsonFormattable):
+
+    _id: str
+    @property
+    def id(self):
+        return self._id
+    @id.setter
+    def id(self, value):
+        self._id = value
+
+    #---------------------------
+
+    def __init__(self, id: str):
+        self.id = id
+
+    def to_json(self):
+        return {
+            "id": self.id
+        }
+
 
 class Person(Entity):
 
-    def __init__(self, id, name, adress):
-        self._id = id
-        self._name = name
-        self._adress = adress
-
-    def __eq__(self, other):
-        if (
-            self.get_id().get_value() == other.get_id().get_value() and
-            self.get_name().get_value() == other.get_name().get_value() and
-            self.get_adress().get_city_name().get_value() == other.get_adress().get_city_name().get_value() and
-            self.get_adress().get_street_name().get_value() == other.get_adress().get_street_name().get_value() and
-            self.get_adress().get_number().get_value() == other.get_adress().get_number().get_value()
-        ):
-            return True
-        return False
-
-    def get_id(self):
-        return self._id
-
-    def get_name(self):
+    _name: str
+    @property
+    def name(self):
         return self._name
+    @name.setter
+    def name(self, value):
+        self._name = value
 
-    def get_adress(self):
-        return self._adress  
+    _address: Address
+    @property
+    def address(self):
+        return self._address
+    @address.setter
+    def address(self, value):
+        self._address = value
 
-    def make_dict(self):
-        """
-        makes a dictionary from its fields
-        
-        Returns:
-            dict: a dictionary
-        """
-        dictionary = {
-            "id": self.get_id().make_dict(),
-            "name": self.get_name().make_dict(),
-            "adress": self.get_adress().make_dict()
+    #---------------------------------------------------------------
+
+    def __init__(self, person_id: str, name: str, address: Address):
+        super().__init__(person_id)
+        self.name = name
+        self.address = address
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "address": self.address.to_json()
         }
-        return dictionary
+
 
 class Event(Entity):
 
-    def __init__(self, id, date, duration, description):
-        self._id = id
-        self._date = date
-        self._duration = duration
-        self._description = description
-
-    def __eq__(self, other):
-        if (
-            self.get_id().get_value() == other.get_id().get_value() and
-            self.get_date().get_day().get_value() == other.get_date().get_day().get_value() and
-            self.get_date().get_month().get_value() == other.get_date().get_month().get_value() and
-            self.get_date().get_year().get_value() == other.get_date().get_year().get_value() and
-            self.get_duration().get_hours().get_value() == other.get_duration().get_hours().get_value() and
-            self.get_duration().get_minutes().get_value() == other.get_duration().get_minutes().get_value() and
-            self.get_description().get_value() == other.get_description().get_value()
-        ):
-            return True
-        return False
-
-    def get_id(self):
-        return self._id
-
-    def get_date(self):
+    _date: Date
+    @property
+    def date(self):
         return self._date
+    @date.setter
+    def date(self, value):
+        self._date = value
 
-    def get_duration(self):
-        return self._duration  
+    _duration: str
+    @property
+    def duration(self):
+        return self._duration
+    @duration.setter
+    def duration(self, value):
+        self._duration = value
 
-    def get_description(self):
-        return self._description 
+    _description: str
+    @property
+    def description(self):
+        return self._description
+    @description.setter
+    def description(self, value):
+        self._description = value
 
-    def make_dict(self):
-        """
-        makes a dictionary from its fields
-        
-        Returns:
-            dict: a dictionary
-        """
-        dictionary = {
-            "id": self.get_id().make_dict(),
-            "date": self.get_date().make_dict(),
-            "duration": self.get_duration().make_dict(),
-            "description": self.get_description().make_dict()
+    #------------------------------------------------------------------------------------------
+
+    def __init__(self, event_id: str, date: Date, duration: str, description: str):
+        super().__init__(event_id)
+        self.date = date
+        self.duration = duration
+        self.description = description
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "date": self.date.to_json(),
+            "duration": self.duration,
+            "description": self.description
         }
-        return dictionary
+
+
+class Attendance:
+    pass
