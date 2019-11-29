@@ -7,22 +7,26 @@ class Service:
     from EventOrganiser.framework.repos import FileRepo
 
     _validator: Validator
+
     @property
     def validator(self):
         return self._validator
+
     @validator.setter
     def validator(self, value):
         self._validator = value
 
     _repo: FileRepo
+
     @property
     def repo(self):
         return self._repo
+
     @repo.setter
     def repo(self, value):
         self._repo = value
 
-    #------------------------
+    # ------------------------
 
     def __init__(self, validator: Validator, repo):
         self.validator = validator
@@ -34,7 +38,7 @@ class CommandsService(Service):
 
     _repo: CommandFileRepo
 
-    #---------------------------
+    # ---------------------------
 
     def __init__(self, commands: CommandFileRepo):
         super().__init__(None, commands)
@@ -53,7 +57,7 @@ class PersonService(Service):
 
     _repo: PersonFileRepo
 
-    #-------------------------------------------
+    # -------------------------------------------
 
     def __init__(self, validator: Validator, persons: PersonFileRepo):
         super().__init__(validator, persons)
@@ -84,11 +88,11 @@ class PersonService(Service):
 
 
 class EventService(Service):
-    from EventOrganiser.framework.repos import  EventFileRepo
+    from EventOrganiser.framework.repos import EventFileRepo
 
     _repo: EventFileRepo
 
-    #-----------------------------------------
+    # -----------------------------------------
 
     def __init__(self, validator: Validator, events: EventFileRepo):
         super().__init__(validator, events)
@@ -154,11 +158,11 @@ class EventService(Service):
 
 
 class AttendanceService(Service):
-    from EventOrganiser.framework.repos import  AttendanceFileRepo
+    from EventOrganiser.framework.repos import AttendanceFileRepo
 
     _repo: AttendanceFileRepo
 
-    #---------------------------------------------------
+    # ---------------------------------------------------
 
     def __init__(self, validator: Validator, attendances: AttendanceFileRepo):
         super().__init__(validator, attendances)
@@ -173,13 +177,10 @@ class AttendanceService(Service):
         self.repo.save_to_json()
 
     def get_ordered_events_attended_by_person(self, person: Person):
-        def by_description(elem):
-            return elem.description
         try:
             events = []
             for attendance in self.repo.get_attendances_with_person(person):
                 events.append(attendance.event)
-            # events.sort(key=by_description)
             events.sort(key=lambda event: (event.description, event.date.year, event.date.month, event.date.day))
             return events
         except Exception as ex:
@@ -198,9 +199,6 @@ class AttendanceService(Service):
                         return at_person
                 return None
 
-            def by_attendances(elem):
-                return elem.attendances
-
             at_persons = []
             for attendance in self.repo.items:
                 at_person = get_person_in_list(attendance.person)
@@ -215,7 +213,7 @@ class AttendanceService(Service):
             at_persons.sort(key=lambda person: person.attendances, reverse=True)
             max_att = at_persons[0].attendances
             at_persons = [Person(at_person.id, at_person.name, at_person.address)
-                for at_person in at_persons if at_person.attendances == max_att]
+                          for at_person in at_persons if at_person.attendances == max_att]
             return at_persons
         except Exception as ex:
             raise Exception(ex)
@@ -227,7 +225,7 @@ class AttendanceService(Service):
                     super().__init__(event_id, date, duration, description)
                     self.attendees = 1
 
-            def get_event_in_list(ev : AttendedEvent):
+            def get_event_in_list(ev: AttendedEvent):
                 for at_event in at_events:
                     if at_event == ev:
                         return at_event
@@ -248,10 +246,47 @@ class AttendanceService(Service):
             at_events.sort(key=lambda event: event.attendees, reverse=True)
             max_att = at_events[0].attendees
             at_events = [Event(at_event.id, at_event.date, at_event.duration, at_event.description)
-                          for at_event in at_events if at_event.attendees == max_att]
+                         for at_event in at_events if at_event.attendees == max_att]
             at_events.sort(key=lambda event: event.description)
-            number_of_events = int(float(20/100) * len(at_events))
+            number_of_events = int(float(20 / 100) * len(at_events))
             return at_events[0:number_of_events]
 
+        except Exception as ex:
+            raise Exception(ex)
+
+    def persons_with_fewest_attendances(self, all_persons):
+        try:
+            class AttendingPerson(Person):
+                def __init__(self, person_id, name, address):
+                    super().__init__(person_id, name, address)
+                    self.attendances = 1
+
+            def get_person_in_list(prs: AttendingPerson):
+                for at_person in at_persons:
+                    if at_person == prs:
+                        return at_person
+                return None
+
+            at_persons = []
+            for attendance in self.repo.items:
+                at_person = get_person_in_list(attendance.person)
+                if at_person is not None:
+                    at_person.attendances += 1
+                else:
+                    at_persons.append(AttendingPerson(
+                        attendance.person.id,
+                        attendance.person.name,
+                        attendance.person.address
+                    ))
+            diff_persons = [person for person in all_persons if person.not_in_list(at_persons)]
+            if len(diff_persons) != 0:
+                at_persons = diff_persons
+            else:
+                at_persons.sort(key=lambda person: person.attendances)
+                min_att = at_persons[0].attendances
+                at_persons = [Person(at_person.id, at_person.name, at_person.address)
+                              for at_person in at_persons if at_person.attendances == min_att]
+            at_persons.sort(key=lambda person: person.name)
+            return at_persons
         except Exception as ex:
             raise Exception(ex)

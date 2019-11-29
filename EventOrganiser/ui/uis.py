@@ -248,6 +248,14 @@ class ConsoleUI:
         except Exception as ex:
             self.write_exception(ex)
 
+    def persons_with_fewest_attendances(self):
+        try:
+            persons = self.attendances_service.persons_with_fewest_attendances(self.persons_service.repo.items)
+
+            self.write_persons(persons)
+        except Exception as ex:
+            self.write_exception(ex)
+
     def exit_application(self):
         exit()
 

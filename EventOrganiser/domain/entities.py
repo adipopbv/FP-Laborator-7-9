@@ -118,6 +118,12 @@ class Person(Entity):
             return False
         return False
 
+    def not_in_list(self, persons):
+        for person in persons:
+            if person == self:
+                return False
+        return True
+
 
 class Event(Entity):
 
