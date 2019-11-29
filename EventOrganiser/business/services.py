@@ -104,7 +104,7 @@ class EventService(Service):
 
 
 class AttendanceService(Service):
-    from EventOrganiser.domain.entities import Attendance
+    from EventOrganiser.domain.entities import Attendance, Person, Event
     from EventOrganiser.framework.repos import  AttendanceFileRepo
 
     _repo: AttendanceFileRepo
@@ -121,3 +121,15 @@ class AttendanceService(Service):
         except Exception as ex:
             raise Exception(ex)
         self.repo.save_to_json()
+
+    def get_ordered_events_attended_by_person(self, person: Person):
+        def by_description(elem):
+            return elem.description
+        try:
+            events = []
+            for attendance in self.repo.get_attendances_with_person(person):
+                events.append(attendance.event)
+            events.sort(key=by_description)
+            return events
+        except Exception as ex:
+            raise Exception(ex)

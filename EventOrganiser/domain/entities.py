@@ -61,6 +61,10 @@ class Entity(JsonFormattable):
     def __init__(self, id: str):
         self.id = id
 
+    def __eq__(self, other):
+        equal = self.id == other.id
+        return equal
+
     def to_json(self):
         return {
             "id": self.id
@@ -91,6 +95,9 @@ class Person(Entity):
         super().__init__(person_id)
         self.name = name
         self.address = address
+
+    def __eq__(self, other):
+        return super().__eq__(other)
 
     def to_json(self):
         return {
@@ -144,6 +151,9 @@ class Event(Entity):
         self.date = date
         self.duration = duration
         self.description = description
+
+    def __eq__(self, other):
+        return super().__eq__(other)
 
     def to_json(self):
         return {

@@ -170,6 +170,13 @@ class AttendanceFileRepo(FileRepo):
     def get_free_id(self):
         return len(self.items)
 
+    def get_attendances_with_person(self, person: Person):
+        attendances = []
+        for attendance in self.items:
+            if attendance.person == person:
+                attendances.append(attendance)
+        return attendances
+
     def load_from_json(self):
         file = open(self.file_name, "r")
         try:
