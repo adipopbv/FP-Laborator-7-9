@@ -226,6 +226,13 @@ class ConsoleUI:
         except Exception as ex:
             self.write_exception(ex)
 
+    def persons_attending_most_events(self):
+        try:
+            persons = self.attendances_service.persons_attending_most_events()
+            self.write_persons(persons)
+        except Exception as ex:
+            self.write_exception(ex)
+
     def exit_application(self):
         exit()
 

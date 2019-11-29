@@ -1,7 +1,8 @@
-from EventOrganiser.framework.repos import FileRepo, CommandFileRepo, AttendanceFileRepo
+from EventOrganiser.domain.entities import Attendance, Person, Event
 
 
 class Service:
+    from EventOrganiser.framework.repos import FileRepo
 
     _repo: FileRepo
     @property
@@ -18,6 +19,7 @@ class Service:
 
 
 class CommandsService(Service):
+    from EventOrganiser.framework.repos import CommandFileRepo
 
     _repo: CommandFileRepo
 
@@ -36,7 +38,6 @@ class CommandsService(Service):
 
 
 class PersonService(Service):
-    from EventOrganiser.domain.entities import Person
     from EventOrganiser.framework.repos import PersonFileRepo
 
     _repo: PersonFileRepo
@@ -70,7 +71,6 @@ class PersonService(Service):
 
 
 class EventService(Service):
-    from EventOrganiser.domain.entities import Event
     from EventOrganiser.framework.repos import  EventFileRepo
 
     _repo: EventFileRepo
@@ -104,7 +104,6 @@ class EventService(Service):
 
 
 class AttendanceService(Service):
-    from EventOrganiser.domain.entities import Attendance, Person, Event
     from EventOrganiser.framework.repos import  AttendanceFileRepo
 
     _repo: AttendanceFileRepo
@@ -131,5 +130,40 @@ class AttendanceService(Service):
                 events.append(attendance.event)
             events.sort(key=by_description)
             return events
+        except Exception as ex:
+            raise Exception(ex)
+
+    def persons_attending_most_events(self):
+        try:
+            class AttendingPerson(Person):
+                def __init__(self, person_id, name, address):
+                    super().__init__(person_id, name, address)
+                    self.attendances = 1
+
+            def get_person_in_list(prs: AttendingPerson):
+                for at_person in at_persons:
+                    if at_person == prs:
+                        return at_person
+                return None
+
+            def by_attendances(elem):
+                return elem.attendances
+
+            at_persons = []
+            for attendance in self.repo.items:
+                at_person = get_person_in_list(attendance.person)
+                if at_person is not None:
+                    at_person.attendances += 1
+                else:
+                    at_persons.append(AttendingPerson(
+                        attendance.person.id,
+                        attendance.person.name,
+                        attendance.person.address
+                    ))
+            at_persons.sort(key=by_attendances, reverse=True)
+            max_att = at_persons[0].attendances
+            at_persons = [Person(at_person.id, at_person.name, at_person.address)
+                for at_person in at_persons if at_person.attendances == max_att]
+            return at_persons
         except Exception as ex:
             raise Exception(ex)
