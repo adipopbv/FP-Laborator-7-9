@@ -233,6 +233,13 @@ class ConsoleUI:
         except Exception as ex:
             self.write_exception(ex)
 
+    def first_20percent_events_with_most_attendees(self):
+        try:
+            events = self.attendances_service.first_20percent_events_with_most_attendees()
+            self.write_events(events)
+        except Exception as ex:
+            self.write_exception(ex)
+
     def exit_application(self):
         exit()
 

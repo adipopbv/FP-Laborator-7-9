@@ -168,3 +168,39 @@ class AttendanceService(Service):
             return at_persons
         except Exception as ex:
             raise Exception(ex)
+
+    def first_20percent_events_with_most_attendees(self):
+        try:
+            class AttendedEvent(Event):
+                def __init__(self, event_id, date, duration, description):
+                    super().__init__(event_id, date, duration, description)
+                    self.attendees = 1
+
+            def get_event_in_list(ev : AttendedEvent):
+                for at_event in at_events:
+                    if at_event == ev:
+                        return at_event
+                return None
+
+            at_events = []
+            for attendance in self.repo.items:
+                at_event = get_event_in_list(attendance.event)
+                if at_event is not None:
+                    at_event.attendees += 1
+                else:
+                    at_events.append(AttendedEvent(
+                        attendance.event.id,
+                        attendance.event.date,
+                        attendance.event.duration,
+                        attendance.event.description
+                    ))
+            at_events.sort(key=lambda event: event.attendees, reverse=True)
+            max_att = at_events[0].attendees
+            at_events = [Event(at_event.id, at_event.date, at_event.duration, at_event.description)
+                          for at_event in at_events if at_event.attendees == max_att]
+            at_events.sort(key=lambda event: event.description)
+            number_of_events = int(float(20/100) * len(at_events))
+            return at_events[0:number_of_events]
+
+        except Exception as ex:
+            raise Exception(ex)
