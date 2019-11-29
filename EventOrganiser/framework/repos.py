@@ -33,6 +33,12 @@ class Repo:
         except Exception as ex:
             raise Exception(ex)
 
+    def load_from_json(self):
+        pass
+
+    def save_to_json(self):
+        pass
+
 
 class FileRepo(Repo, JsonSaver):
 

@@ -7,21 +7,17 @@ class Service:
     from EventOrganiser.framework.repos import FileRepo
 
     _validator: Validator
-
     @property
     def validator(self):
         return self._validator
-
     @validator.setter
     def validator(self, value):
         self._validator = value
 
     _repo: FileRepo
-
     @property
     def repo(self):
         return self._repo
-
     @repo.setter
     def repo(self, value):
         self._repo = value
