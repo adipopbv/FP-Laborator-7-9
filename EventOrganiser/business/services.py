@@ -128,7 +128,8 @@ class AttendanceService(Service):
             events = []
             for attendance in self.repo.get_attendances_with_person(person):
                 events.append(attendance.event)
-            events.sort(key=by_description)
+            # events.sort(key=by_description)
+            events.sort(key=lambda event: (event.description, event.date.year, event.date.month, event.date.day))
             return events
         except Exception as ex:
             raise Exception(ex)
@@ -160,7 +161,7 @@ class AttendanceService(Service):
                         attendance.person.name,
                         attendance.person.address
                     ))
-            at_persons.sort(key=by_attendances, reverse=True)
+            at_persons.sort(key=lambda person: person.attendances, reverse=True)
             max_att = at_persons[0].attendances
             at_persons = [Person(at_person.id, at_person.name, at_person.address)
                 for at_person in at_persons if at_person.attendances == max_att]
