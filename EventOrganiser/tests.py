@@ -184,25 +184,14 @@ class Tests:
     class ValidatorsTests:
 
         def run_all(self):
-            self.validate_person_test()
+            self.validate_person_from_repo()
+            self.validate_person()
 
-        def validate_person_test(self):
-            validator = self.Validator()
-            person = self.Person(self.Id("123"), self.Name("kajner"), self.Adress(self.CityName("hkuygdkf"), self.StreetName("knwjv"), self.Number("51")))
-            repo = self.IdRepo()
-            try:
-                validator.validate_person(repo, person)
-                assert True
-            except:
-                assert False
-            person = self.Person(self.Id("123"), self.Name("kajner"), self.Adress(self.CityName("hkuygdkf"), self.StreetName(2314), self.Number(1)))
-            repo.add(person)
-            try:
-                validator.validate_person(repo, person)
-                assert False
-            except:
-                assert True
+        def validate_person_from_repo(self):
+            pass
 
+        def validate_person(self):
+            pass
     #------------------
 
     @property

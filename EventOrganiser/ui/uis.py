@@ -240,6 +240,14 @@ class ConsoleUI:
         except Exception as ex:
             self.write_exception(ex)
 
+    def generate_random_events(self):
+        try:
+            number_of_events = int(self.read("Please imput the number of random events to be generated: "))
+            self.events_service.generate_random_events(number_of_events)
+            self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
+
     def exit_application(self):
         exit()
 

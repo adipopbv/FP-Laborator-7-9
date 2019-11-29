@@ -1,4 +1,5 @@
 from EventOrganiser.domain.entities import Attendance, Person, Event
+from EventOrganiser.domain.fields import Date
 from EventOrganiser.framework.validators import Validator
 
 
@@ -115,6 +116,41 @@ class EventService(Service):
             return events
         except Exception as ex:
             raise Exception(ex)
+
+    def generate_random_events(self, number_of_events):
+        import random
+
+        def random_str():
+            string = ""
+            number_of_letters = random.randrange(0, 21, 1)
+            for _ in range(0, number_of_letters):
+                string += chr(random.randrange(ord('A'), ord('z'), 1))
+            return string
+
+        def generate_random_event():
+            try:
+                event = Event(
+                    random_str(),
+                    Date(
+                        str(random.randint(0, 10)),
+                        random_str(),
+                        str(random.randint(0, 10))
+                    ),
+                    random_str(),
+                    random_str()
+                )
+                self.validator.validate_event_from_repo(self.repo, event)
+                return event
+            except:
+                return generate_random_event()
+
+        try:
+            for _ in range(0, number_of_events):
+                event = generate_random_event()
+                self.repo.add(event)
+        except Exception as ex:
+            raise Exception(ex)
+        self.repo.save_to_json()
 
 
 class AttendanceService(Service):
