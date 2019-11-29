@@ -1,192 +1,334 @@
+from EventOrganiser.business.services import PersonService, EventService, AttendanceService
+from EventOrganiser.domain.entities import Person, Event, Entity, Attendance
+from EventOrganiser.domain.fields import Address, Date
+from EventOrganiser.framework.repos import Repo, PersonRepo, EventRepo, AttendanceRepo
+from EventOrganiser.framework.validators import Validator
+
+
 class Tests:
 
-    class ServiceTest:
-        from business.services import Service
-        from domain.entities import Id, Name, CityName, StreetName, Number, Adress, Person
-        from framework.validators import Validator
-        from framework.repos import IdRepo
+    class ServicesTests:
 
         def run_all(self):
-            self.create_adress_test()
-            self.creare_person_test()
-            self.add_person_to_repo_test()
-            self.add_event_to_repo_test()
-            self.modify_person_from_repo_test()
-            self.modify_event_from_repo_test()
-            self.search_person_in_repo_test()
-            self.search_event_in_repo_test()
+            self.person_service()
 
-        def create_adress_test(self):
-            persons = self.IdRepo()
-            events = self.IdRepo()
-            validator = self.Validator()
-            service = self.Service(persons, events, validator)
-            adress = service.create_adress("cluj", "dorobantilor", "123")
-            assert adress.get_city_name().get_value() == "cluj"
-            assert adress.get_street_name().get_value() == "dorobantilor"
-            assert adress.get_number().get_value() == "123"
+        def person_service(self):
 
-        def creare_person_test(self):
-            persons = self.IdRepo()
-            events = self.IdRepo()
-            validator = self.Validator()
-            service = self.Service(persons, events, validator)
-            adress = service.create_adress("cluj", "dorobantilor", "123")
-            person = service.create_person("1", "cineva", adress)
-            assert person.get_id().get_value() == "1"
-            assert person.get_name().get_value() == "cineva"
-            assert person.get_adress().get_city_name().get_value() == "cluj"
-            assert person.get_adress().get_street_name().get_value() == "dorobantilor"
-            assert person.get_adress().get_number().get_value() == "123"
+            def add_person():
+                validator = Validator()
+                pers_repo = PersonRepo([])
+                pers_service = PersonService(validator, pers_repo)
+                person1 = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+                person2 = Person("2", "andrei", Address("cluj", "republicii", "23A"))
+                person3 = Person("3", "ghita", Address("cluj", "republicii", "23A"))
 
-        def add_person_to_repo_test(self):
-            persons = self.IdRepo()
-            events = self.IdRepo()
-            validator = self.Validator()
-            service = self.Service(persons, events, validator)
-            service.add_person_to_repo(persons, "1", "cineva", "cluj", "dorobantilor", "123")
-            assert service.get_persons().count() == 1
-            assert not service.get_persons().count() == 0
+                pers_service.add_person(person1)
+                assert pers_service.repo.items[0] == person1
 
-        def add_event_to_repo_test(self):
-            events = self.IdRepo()
-            events = self.IdRepo()
-            validator = self.Validator()
-            service = self.Service(events, events, validator)
-            service.add_event_to_repo(events, "1", "1", "1", "2000", "02", "35", "best party")
-            assert service.get_events().count() == 1
-            assert not service.get_events().count() == 0
+            def modify_person():
+                validator = Validator()
+                pers_repo = PersonRepo([])
+                pers_service = PersonService(validator, pers_repo)
+                person1 = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+                person2 = Person("2", "andrei", Address("cluj", "republicii", "23A"))
+                person3 = Person("3", "ghita", Address("cluj", "republicii", "23A"))
 
-        def modify_person_from_repo_test(self):
-            persons = self.IdRepo()
-            events = self.IdRepo()
-            validator = self.Validator()
-            service = self.Service(persons, events, validator)
-            person1 = service.create_person("1", "maBoi", service.create_adress("cluj", "doro", "2"))
-            person2 = service.create_person("2", "yaBoi", service.create_adress("cluj-napoca", "dorobantilor", "3"))
-            service.get_persons().add(person1)
-            service.modify_person_from_repo(persons, "1", "2", "yaBoi", "cluj-napoca", "dorobantilor", "3")
-            person = service.get_persons().get_item_with_id_value("2")
-            assert person == person2
-            assert not person == person1
+                pers_service.add_person(person1)
+                pers_service.add_person(person2)
+                pers_service.modify_person("id", "2", person3)
+                assert pers_service.repo.items[1] == person3
 
-        def modify_event_from_repo_test(self):
-            persons = self.IdRepo()
-            events = self.IdRepo()
-            validator = self.Validator()
-            service = self.Service(persons, events, validator)
-            event1 = service.create_event("1", service.create_date("1", "1", "2000"), service.create_duration("3", "35"), "best party")
-            event2 = service.create_event("2", service.create_date("15", "12", "2019"), service.create_duration("4", "45"), "best parteee")
-            service.get_events().add(event1)
-            service.modify_event_from_repo(events, "1", "2", "15", "12", "2019", "4", "45", "best parteee")
-            event = service.get_events().get_item_with_id_value("2")
-            assert event == event2
-            assert not event == event1
+            def search_person():
+                validator = Validator()
+                pers_repo = PersonRepo([])
+                pers_service = PersonService(validator, pers_repo)
+                person1 = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+                person2 = Person("2", "andrei", Address("cluj", "republicii", "23A"))
+                person3 = Person("3", "ghita", Address("cluj", "republicii", "23A"))
 
-        def search_person_in_repo_test(self):
-            persons = self.IdRepo()
-            validator = self.Validator()
-            service = self.Service(persons, None, validator)
-            person = service.create_person("1", "Pop", service.create_adress("bv", "ag-lui", "17"))
-            service.get_persons().add(person)
-            assert service.search_person_in_repo(service.get_persons(), "1") == person
-            assert not service.search_person_in_repo(service.get_persons(), "1") != person
+                pers_service.add_person(person1)
+                pers_service.add_person(person2)
+                assert pers_service.search_person("id", "2") == [person2]
 
-        def search_event_in_repo_test(self):
-            events = self.IdRepo()
-            validator = self.Validator()
-            service = self.Service(None, events, validator)
-            event = service.create_event("1", service.create_date("1", "1", "2019"), service.create_duration("02", "35"), "best party ever")
-            service.get_events().add(event)
-            assert service.search_event_in_repo(service.get_events(), "1") == event
-            assert not service.search_event_in_repo(service.get_events(), "1") != event
+            add_person()
+            modify_person()
+            search_person()
 
-    class CommandsRepoTest:
-        from framework.repos import CommandsRepo
-        from domain.entities import Command, Id, Function
+        def events_service(self):
+
+            def add_event():
+                validator = Validator()
+                events_repo = EventRepo([])
+                events_service = EventService(validator, events_repo)
+                event1 = Event("1", Date("2", "april", "2019"), "23", "nice party")
+                event2 = Event("2", Date("2", "march", "2019"), "AFDB", "nice party")
+                event3 = Event("3", Date("2", "5", "2020"), "aefb", "nice party")
+                events_service.add_event(event1)
+                assert events_service.repo.items[0] == event1
+
+            def modify_event():
+                validator = Validator()
+                events_repo = EventRepo([])
+                events_service = EventService(validator, events_repo)
+                event1 = Event("1", Date("2", "april", "2019"), "23", "nice party")
+                event2 = Event("2", Date("2", "march", "2019"), "AFDB", "nice party")
+                event3 = Event("3", Date("2", "5", "2020"), "aefb", "nice party")
+                events_service.add_event(event1)
+                events_service.add_event(event2)
+                events_service.modify_event("id", "2", event3)
+                assert events_service.repo.items[1] == event3
+
+            def search_event():
+                validator = Validator()
+                events_repo = EventRepo([])
+                events_service = EventService(validator, events_repo)
+                event1 = Event("1", Date("2", "april", "2019"), "23", "nice party")
+                event2 = Event("2", Date("2", "march", "2019"), "AFDB", "nice party")
+                event3 = Event("3", Date("2", "5", "2020"), "aefb", "nice party")
+                events_service.add_event(event1)
+                events_service.add_event(event2)
+                assert events_service.search_event("id", "2") == event3
+
+            def generate_random_events():
+                validator = Validator()
+                events_repo = EventRepo([])
+                events_service = EventService(validator, events_repo)
+                event1 = Event("1", Date("2", "april", "2019"), "23", "nice party")
+                event2 = Event("2", Date("2", "march", "2019"), "AFDB", "nice party")
+                event3 = Event("3", Date("2", "5", "2020"), "aefb", "nice party")
+
+                events_service.generate_random_events(2)
+                assert len(events_service.repo.items) != 0
+
+            add_event()
+            modify_event()
+            search_event()
+            generate_random_events()
+
+        def attendance_service(self):
+
+            def add_attendance():
+                valid = Validator()
+                at_repo = AttendanceRepo([])
+                at_service = AttendanceService(valid, at_repo)
+                person1 = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+                event1 = Event("1", Date("2", "april", "2019"), "23", "nice party")
+                attendance1 = Attendance("1", person1, event1)
+
+                at_service.add_attendance(attendance1)
+                assert at_service.repo.items == attendance1
+
+            def get_ordered_events_attended_by_person():
+                valid = Validator()
+                at_repo = AttendanceRepo([])
+                at_service = AttendanceService(valid, at_repo)
+                person1 = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+                event1 = Event("1", Date("2", "april", "2019"), "23", "nice party")
+                attendance1 = Attendance("1", person1, event1)
+
+                at_service.add_attendance(attendance1)
+                assert at_service.get_ordered_events_attended_by_person(person1) == [event1]
+
+            def persons_attending_most_events():
+                valid = Validator()
+                at_repo = AttendanceRepo([])
+                at_service = AttendanceService(valid, at_repo)
+                person1 = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+                event1 = Event("1", Date("2", "april", "2019"), "23", "nice party")
+                attendance1 = Attendance("1", person1, event1)
+
+                at_service.add_attendance(attendance1)
+                assert at_service.persons_attending_most_events() == [person1]
+
+            def first_20percent_events_with_most_attendees():
+                valid = Validator()
+                at_repo = AttendanceRepo([])
+                at_service = AttendanceService(valid, at_repo)
+                person1 = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+                event1 = Event("1", Date("2", "april", "2019"), "23", "nice party")
+                attendance1 = Attendance("1", person1, event1)
+
+                at_service.add_attendance(attendance1)
+                assert at_service.first_20percent_events_with_most_attendees() == []
+
+            def persons_with_fewest_attendances():
+                valid = Validator()
+                at_repo = AttendanceRepo([])
+                at_service = AttendanceService(valid, at_repo)
+                person1 = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+                event1 = Event("1", Date("2", "april", "2019"), "23", "nice party")
+                attendance1 = Attendance("1", person1, event1)
+
+                at_service.add_attendance(attendance1)
+                assert at_service.persons_attending_most_events() == [person1]
+
+            add_attendance()
+            get_ordered_events_attended_by_person()
+            persons_attending_most_events()
+            first_20percent_events_with_most_attendees()
+            persons_with_fewest_attendances()
+
+
+    class EntitiesTests:
 
         def run_all(self):
-            self.get_commands_with_id_test()
+            self.person_has_field_with_value()
+            self.event_has_field_with_value()
 
-        def get_commands_with_id_test(self):
-            command1 = self.Command(self.Id("1"), self.Function(None))
-            command2 = self.Command(self.Id("2"), self.Function(None))
-            commandsRepo = self.CommandsRepo(command1, command2)
-            assert commandsRepo.get_command_with_id_value("2") == command2
-            assert not commandsRepo.get_command_with_id_value("2") == command1
+        def person_has_field_with_value(self):
+            person = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+            assert person.has_field_with_value("name", "vasile") is True
+            assert person.has_field_with_value("city", "cluj") is True
+            assert person.has_field_with_value("address", "cluj") is False
+            assert person.has_field_with_value("number", "24") is False
+
+        def event_has_field_with_value(self):
+            event = Event("1", Date("2", "march", "2019"), "2:35", "nice party")
+            assert event.has_field_with_value("id", "1") is True
+            assert event.has_field_with_value("month", "march") is True
+            assert event.has_field_with_value("date", "2019") is False
+            assert event.has_field_with_value("description", "bad party") is False
+
+    class ReposTests:
+
+        person = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+        event = Event("1", Date("2", "march", "2019"), "2:35", "nice party")
+        attendance = Attendance("0", person, event)
+
+        def run_all(self):
+            self.repo_add()
+            self.repo_modify()
+            self.pr_get_person_with_field_value()
+            self.er_get_person_with_field_value()
+            self.ar_get_free_id()
+
+        def repo_add(self):
+            repo = Repo([])
+            repo.add(Entity("2"))
+            assert not len(repo.items) == 0
+            assert repo.items[0] == Entity("2")
+            assert not repo.items[0] == Entity("3")
+
+        def repo_modify(self):
+            repo = Repo([Entity("2")])
+            repo.modify(Entity("2"), Entity("3"))
+            assert len(repo.items) == 1
+            assert repo.items[0] == Entity("3")
+            assert not repo.items[0] == Entity("2")
+
+        def pr_get_person_with_field_value(self):
+            repo = PersonRepo([self.person])
             try:
-                assert commandsRepo.get_command_with_id(1)
+                assert repo.get_person_with_field_value("name", "vasile") == self.person
+            except:
+                assert False
+            try:
+                repo.get_person_with_field_value("ceva", "altceva")
                 assert False
             except:
                 assert True
 
-    class RepoTest:
-        from framework.repos import Repo
-
-        def run_all(self):
-            self.add_test()
-            self.count_test()
-
-        def add_test(self):
-            repo = self.Repo(1, 2, 3)
-            repo.add(4)
-            assert repo.get_items() == [1,2,3,4]
-            assert not repo.get_items() == [1,2,3]
-
-        def count_test(self):
-            repo = self.Repo(1, 2, 3)
-            assert repo.count() == 3
-            assert not repo.count() == 0
-
-    class ValidatorTest:
-        from framework.validators import Validator
-        from framework.repos import IdRepo
-        from domain.entities import Id, Name, CityName, StreetName, Number, Adress, Person
-
-        def run_all(self):
-            self.validate_person_test()
-
-        def validate_person_test(self):
-            validator = self.Validator()
-            person = self.Person(self.Id("123"), self.Name("kajner"), self.Adress(self.CityName("hkuygdkf"), self.StreetName("knwjv"), self.Number("51")))
-            repo = self.IdRepo()
+        def er_get_person_with_field_value(self):
+            repo = EventRepo([self.event])
             try:
-                validator.validate_person(repo, person)
-                assert True
+                assert repo.get_event_with_field_value("day", "2") == self.event
             except:
                 assert False
-            person = self.Person(self.Id("123"), self.Name("kajner"), self.Adress(self.CityName("hkuygdkf"), self.StreetName(2314), self.Number(1)))
-            repo.add(person)
             try:
-                validator.validate_person(repo, person)
+                repo.get_event_with_field_value("ceva", "altceva")
                 assert False
             except:
                 assert True
+
+        def ar_get_free_id(self):
+            repo = AttendanceRepo([])
+            assert repo.get_free_id() == 0
+
+        def ar_get_attendances_with_person(self):
+            repo = AttendanceRepo([self.attendance])
+            assert repo.get_attendances_with_person(self.person) == self.attendance
+
+    class ValidatorsTests:
+
+        def run_all(self):
+            self.validate_person_from_repo()
+            self.validate_event_from_repo()
+
+        validator = Validator()
+        person = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+        event = Event("1", Date("2", "march", "2019"), "2:35", "nice party")
+        pers_repo = PersonRepo([person])
+        ev_repo = EventRepo([event])
+
+        def validate_person_from_repo(self):
+            try:
+                self.validator.validate_person_from_repo(self.pers_repo,
+                                                         Person("2", "vasile", Address("cluj", "republicii", "23A")))
+                assert True
+            except:
+                assert False
+            try:
+                self.validator.validate_person_from_repo(self.pers_repo,
+                                                         Person("1", "hbv78268g2", Address("223", "republicii", "q31v")))
+                assert False
+            except:
+                assert True
+
+        def validate_event_from_repo(self):
+            try:
+                self.validator.validate_event_from_repo(self.ev_repo,
+                                                         Event("2", Date("2", "march", "2019"), "2:35", "nice party"))
+                assert True
+            except:
+                assert False
+            try:
+                self.validator.validate_event_from_repo(self.ev_repo,
+                                                        Event("1", Date("kuac", "march", "1c"), "2:35", "nice party"))
+                assert False
+            except:
+                assert True
+    #------------------
+
+    @property
+    def services_tests(self):
+        return self._services_tests
+    @services_tests.setter
+    def services_tests(self, value):
+        self._services_tests = value
+
+    @property
+    def repos_tests(self):
+        return self._repos_tests
+    @repos_tests.setter
+    def repos_tests(self, value):
+        self._repos_tests = value
+
+    @property
+    def entities_tests(self):
+        return self._entities_tests
+    @entities_tests.setter
+    def entities_tests(self, value):
+        self._entities_tests = value
+
+    @property
+    def validators_tests(self):
+        return self._validators_tests
+    @validators_tests.setter
+    def validators_tests(self, value):
+        self._validators_tests = value
 
     #------------------
 
     def __init__(self):
-        self._service_test = self.ServiceTest()
-        self._repo_test = self.RepoTest()
-        self._commands_repo_test = self.CommandsRepoTest()
-        self._validator_test = self.ValidatorTest()
-
-    def get_service_test(self):
-        return self._service_test
-
-    def get_repo_test(self):
-        return self._repo_test
-
-    def get_commands_repo_test(self):
-        return self._commands_repo_test
-
-    def get_validator_test(self):
-        return self._validator_test
+        self.services_tests = self.ServicesTests()
+        self.repos_tests = self.ReposTests()
+        self.entities_tests = self.EntitiesTests()
+        self.validators_tests = self.ValidatorsTests()
 
     #------------------
 
     def run_all(self):
-        self.get_validator_test().run_all()
-        self.get_repo_test().run_all()
-        self.get_commands_repo_test().run_all()
-        self.get_service_test().run_all()
+        self.services_tests.run_all()
+        self.repos_tests.run_all()
+        self.entities_tests.run_all()
+        self.validators_tests.run_all()
