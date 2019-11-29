@@ -167,5 +167,42 @@ class EventFileRepo(FileRepo):
 
 class AttendanceFileRepo(FileRepo):
 
+    def get_free_id(self):
+        return len(self.items)
+
     def load_from_json(self):
-        pass
+        file = open(self.file_name, "r")
+        try:
+            file_string = file.read()
+            data = self.json.loads(file_string)
+
+            attendances = []
+            for data_attendance in data:
+                attendances.append(Attendance(
+                    data_attendance["id"],
+                    Person(
+                        data_attendance["person"]["id"],
+                        data_attendance["person"]["name"],
+                        Address(
+                            data_attendance["person"]["address"]["city"],
+                            data_attendance["person"]["address"]["street"],
+                            data_attendance["person"]["address"]["number"]
+                        )
+                    ),
+                    Event(
+                        data_attendance["event"]["id"],
+                        Date(
+                            data_attendance["event"]["date"]["day"],
+                            data_attendance["event"]["date"]["month"],
+                            data_attendance["event"]["date"]["year"]
+                        ),
+                        data_attendance["event"]["duration"],
+                        data_attendance["event"]["description"]
+                    )
+                ))
+
+            self.items = attendances
+            file.close()
+        except Exception as ex:
+            file.close()
+            raise Exception(ex)

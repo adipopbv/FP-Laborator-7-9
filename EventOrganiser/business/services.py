@@ -1,4 +1,4 @@
-from EventOrganiser.framework.repos import FileRepo, CommandFileRepo, PersonFileRepo, EventFileRepo, AttendanceFileRepo
+from EventOrganiser.framework.repos import FileRepo, CommandFileRepo, AttendanceFileRepo
 
 
 class Service:
@@ -37,10 +37,11 @@ class CommandsService(Service):
 
 class PersonService(Service):
     from EventOrganiser.domain.entities import Person
+    from EventOrganiser.framework.repos import PersonFileRepo
 
     _repo: PersonFileRepo
 
-    #---------------------------
+    #-------------------------------------------
 
     def __init__(self, persons: PersonFileRepo):
         super().__init__(persons)
@@ -49,9 +50,9 @@ class PersonService(Service):
     def add_person(self, person: Person):
         try:
             self.repo.add(person)
-            self.repo.save_to_json()
         except Exception as ex:
             raise Exception(ex)
+        self.repo.save_to_json()
 
     def modify_person(self, field, field_value, modified_person):
         try:
@@ -70,17 +71,19 @@ class PersonService(Service):
 
 class EventService(Service):
     from EventOrganiser.domain.entities import Event
+    from EventOrganiser.framework.repos import  EventFileRepo
 
-    #--------------------------
+    _repo: EventFileRepo
 
-    def __init__(self, events):
+    #-----------------------------------------
+
+    def __init__(self, events: EventFileRepo):
         super().__init__(events)
         self.repo.load_from_json()
 
     def add_event(self, event: Event):
         try:
             self.repo.add(event)
-            self.repo.save_to_json()
         except Exception as ex:
             raise Exception(ex)
         self.repo.save_to_json()
@@ -102,9 +105,19 @@ class EventService(Service):
 
 class AttendanceService(Service):
     from EventOrganiser.domain.entities import Attendance
+    from EventOrganiser.framework.repos import  AttendanceFileRepo
 
-    #-------------------------------
+    _repo: AttendanceFileRepo
 
-    def __init__(self, attendances):
+    #---------------------------------------------------
+
+    def __init__(self, attendances: AttendanceFileRepo):
         super().__init__(attendances)
         self.repo.load_from_json()
+
+    def add_attendance(self, attendance: Attendance):
+        try:
+            self.repo.add(attendance)
+        except Exception as ex:
+            raise Exception(ex)
+        self.repo.save_to_json()

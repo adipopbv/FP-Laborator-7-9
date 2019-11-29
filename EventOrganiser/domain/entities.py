@@ -165,5 +165,34 @@ class Event(Entity):
             return False
 
 
-class Attendance:
-    pass
+class Attendance(Entity):
+
+    _person: Person
+    @property
+    def person(self):
+        return self._person
+    @person.setter
+    def person(self, value):
+        self._person = value
+
+    _event: Event
+    @property
+    def event(self):
+        return self._event
+    @event.setter
+    def event(self, value):
+        self._event = value
+
+    #------------------------------------------------
+
+    def __init__(self, attendance_id: str, person: Person, event: Event):
+        super().__init__(attendance_id)
+        self.person = person
+        self.event = event
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "person": self.person.to_json(),
+            "event": self.event.to_json()
+        }

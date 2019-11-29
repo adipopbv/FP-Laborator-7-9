@@ -203,6 +203,20 @@ class ConsoleUI:
         except Exception as ex:
             self.write_exception(ex)
 
+    def enroll_person(self):
+        try:
+            person_id = self.read("Please input the person's id: ")
+            event_id = self.read("Please input the id of the event: ")
+            attendance = Attendance(
+                self.attendances_service.repo.get_free_id(),
+                self.persons_service.search_person("id", person_id)[0],
+                self.events_service.search_event("id", event_id)[0]
+            )
+            self.attendances_service.add_attendance(attendance)
+            self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
+
     def exit_application(self):
         exit()
 
