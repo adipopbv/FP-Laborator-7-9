@@ -1,55 +1,66 @@
-from domain.entities import Id, Name, CityName, StreetName, Number, Adress, Person
-from domain.entities import Day, Month, Year, Date, Hours, Minutes, Duration, Description, Event
+from EventOrganiser.domain.entities import Person, Event, Attendance
+from EventOrganiser.framework.repos import PersonFileRepo, EventFileRepo, AttendanceFileRepo
+
 
 class Validator:
 
-    def validate_person(self, repo, person):
-        """
-        validates the given person
-        
-        Args:
-            person (Person): a person
-        
-        Raises:
-            Exception: invalid person
-        """
-        if (type(person.get_id()) != Id and person.get_id() < 0 and
-            type(person.get_name()) != Name and
-            type(person.get_adress()) != Adress and
-            type(person.get_adress().get_city()) != CityName and
-            type(person.get_adress().get_street()) != StreetName and
-            type(person.get_adress().get_number()) != Number ):
-            raise Exception("Invalid person!")
-        ok = None
+    def validate_person_from_repo(self, repo: PersonFileRepo, person: Person):
+        ok = True
         try:
-            ok = repo.get_item_with_id_value(person.get_id().get_value())
+            repo.get_person_with_field_value("id", person.id)
+            ok = False
         except:
-            pass
-        if ok != None:
-            raise Exception("Invalid person!")
+            try:
+                self.validate_person(person)
+            except Exception as ex:
+                raise Exception(ex)
+        if not ok:
+            raise Exception("Person with id already in repo")
 
-    def validate_event(self, repo, event):
-        """
-        validates the given event
-        
-        Args:
-            event (Event): a event
-        
-        Raises:
-            Exception: invalid event
-        """
-        if ( type(event.get_id()) != Id and event.get_id() < 0 and
-            type(event.get_date().get_day()) != Day and
-            type(event.get_date().get_month()) != Month and
-            type(event.get_date().get_year()) != Year and
-            type(event.get_duration().get_hours()) != Hours and
-            type(event.get_duration().get_minutes()) != Minutes and
-            type(event.get_gescription()) != Description):
-            raise Exception("Invalid event!")
-        ok = None
+    def validate_person(self, person: Person):
+        ok = True
         try:
-            ok = repo.get_item_with_id_value(event.get_id().get_value())
+            int(person.name)
+            ok = False
         except:
-            pass
-        if ok != None:
-            raise Exception("Invalid event!")
+            try:
+                int(person.address.city)
+                ok = False
+            except:
+                pass
+        if not ok:
+            raise Exception("Invalid person data")
+
+    def validate_event_from_repo(self, repo: EventFileRepo, event: Event):
+        ok = True
+        try:
+            repo.get_event_with_field_value("id", event.id)
+            ok = False
+        except:
+            try:
+                self.validate_event(event)
+            except Exception as ex:
+                raise Exception(ex)
+        if not ok:
+            raise Exception("Event with id already in repo")
+
+
+    def validate_event(self, event: Event):
+        ok = True
+        try:
+            int(event.date.year)
+            try:
+                int(event.date.day)
+            except:
+                ok = False
+        except:
+            ok = False
+        if not ok:
+            raise Exception("Invalid event data")
+
+    def validate_attendance(self, attendance: Attendance):
+        try:
+            self.validate_person(attendance.person)
+            self.validate_event(attendance.event)
+        except Exception as ex:
+            raise Exception(ex)

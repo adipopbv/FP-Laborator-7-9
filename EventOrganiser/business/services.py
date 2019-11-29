@@ -1,8 +1,17 @@
 from EventOrganiser.domain.entities import Attendance, Person, Event
+from EventOrganiser.framework.validators import Validator
 
 
 class Service:
     from EventOrganiser.framework.repos import FileRepo
+
+    _validator: Validator
+    @property
+    def validator(self):
+        return self._validator
+    @validator.setter
+    def validator(self, value):
+        self._validator = value
 
     _repo: FileRepo
     @property
@@ -14,7 +23,8 @@ class Service:
 
     #------------------------
 
-    def __init__(self, repo):
+    def __init__(self, validator: Validator, repo):
+        self.validator = validator
         self.repo = repo
 
 
@@ -25,8 +35,8 @@ class CommandsService(Service):
 
     #---------------------------
 
-    def __init__(self, commands):
-        super().__init__(commands)
+    def __init__(self, commands: CommandFileRepo):
+        super().__init__(None, commands)
         self.repo.load_from_json()
 
     def get_command_with_key(self, key_value):
@@ -44,12 +54,13 @@ class PersonService(Service):
 
     #-------------------------------------------
 
-    def __init__(self, persons: PersonFileRepo):
-        super().__init__(persons)
+    def __init__(self, validator: Validator, persons: PersonFileRepo):
+        super().__init__(validator, persons)
         self.repo.load_from_json()
 
     def add_person(self, person: Person):
         try:
+            self.validator.validate_person_from_repo(self.repo, person)
             self.repo.add(person)
         except Exception as ex:
             raise Exception(ex)
@@ -57,6 +68,7 @@ class PersonService(Service):
 
     def modify_person(self, field, field_value, modified_person):
         try:
+            self.validator.validate_person(modified_person)
             self.repo.modify(self.repo.get_person_with_field_value(field, field_value), modified_person)
             self.repo.save_to_json()
         except Exception as ex:
@@ -77,12 +89,13 @@ class EventService(Service):
 
     #-----------------------------------------
 
-    def __init__(self, events: EventFileRepo):
-        super().__init__(events)
+    def __init__(self, validator: Validator, events: EventFileRepo):
+        super().__init__(validator, events)
         self.repo.load_from_json()
 
     def add_event(self, event: Event):
         try:
+            self.validator.validate_event_from_repo(self.repo, event)
             self.repo.add(event)
         except Exception as ex:
             raise Exception(ex)
@@ -90,6 +103,7 @@ class EventService(Service):
 
     def modify_event(self, field, field_value, modified_event):
         try:
+            self.validator.validate_event(event)
             self.repo.modify(self.repo.get_event_with_field_value(field, field_value), modified_event)
             self.repo.save_to_json()
         except Exception as ex:
@@ -110,12 +124,13 @@ class AttendanceService(Service):
 
     #---------------------------------------------------
 
-    def __init__(self, attendances: AttendanceFileRepo):
-        super().__init__(attendances)
+    def __init__(self, validator: Validator, attendances: AttendanceFileRepo):
+        super().__init__(validator, attendances)
         self.repo.load_from_json()
 
     def add_attendance(self, attendance: Attendance):
         try:
+            self.validator.validate_attendance(attendance)
             self.repo.add(attendance)
         except Exception as ex:
             raise Exception(ex)
