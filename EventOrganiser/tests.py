@@ -1,10 +1,11 @@
+from EventOrganiser.domain.entities import Person, Event, Entity, Attendance
+from EventOrganiser.domain.fields import Address, Date
+from EventOrganiser.framework.repos import Repo, PersonRepo, EventRepo, AttendanceRepo
+
+
 class Tests:
 
-    class ServiceTest:
-        from business.services import Service
-        from domain.entities import Id, Name, CityName, StreetName, Number, Adress, Person
-        from framework.validators import Validator
-        from framework.repos import IdRepo
+    class ServicesTests:
 
         def run_all(self):
             self.create_adress_test()
@@ -101,47 +102,86 @@ class Tests:
             assert service.search_event_in_repo(service.get_events(), "1") == event
             assert not service.search_event_in_repo(service.get_events(), "1") != event
 
-    class CommandsRepoTest:
-        from framework.repos import CommandsRepo
-        from domain.entities import Command, Id, Function
+    class EntitiesTests:
 
         def run_all(self):
-            self.get_commands_with_id_test()
+            self.person_has_field_with_value()
+            self.event_has_field_with_value()
 
-        def get_commands_with_id_test(self):
-            command1 = self.Command(self.Id("1"), self.Function(None))
-            command2 = self.Command(self.Id("2"), self.Function(None))
-            commandsRepo = self.CommandsRepo(command1, command2)
-            assert commandsRepo.get_command_with_id_value("2") == command2
-            assert not commandsRepo.get_command_with_id_value("2") == command1
+        def person_has_field_with_value(self):
+            person = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+            assert person.has_field_with_value("name", "vasile") is True
+            assert person.has_field_with_value("city", "cluj") is True
+            assert person.has_field_with_value("address", "cluj") is False
+            assert person.has_field_with_value("number", "24") is False
+
+        def event_has_field_with_value(self):
+            event = Event("1", Date("2", "march", "2019"), "2:35", "nice party")
+            assert event.has_field_with_value("id", "1") is True
+            assert event.has_field_with_value("month", "march") is True
+            assert event.has_field_with_value("date", "2019") is False
+            assert event.has_field_with_value("description", "bad party") is False
+
+    class ReposTests:
+
+        person = Person("1", "vasile", Address("cluj", "republicii", "23A"))
+        event = Event("1", Date("2", "march", "2019"), "2:35", "nice party")
+        attendance = Attendance("0", person, event)
+
+        def run_all(self):
+            self.repo_add()
+            self.repo_modify()
+            self.pr_get_person_with_field_value()
+            self.er_get_person_with_field_value()
+            self.ar_get_free_id()
+
+        def repo_add(self):
+            repo = Repo([])
+            repo.add(Entity("2"))
+            assert not len(repo.items) == 0
+            assert repo.items[0] == Entity("2")
+            assert not repo.items[0] == Entity("3")
+
+        def repo_modify(self):
+            repo = Repo([Entity("2")])
+            repo.modify(Entity("2"), Entity("3"))
+            assert len(repo.items) == 1
+            assert repo.items[0] == Entity("3")
+            assert not repo.items[0] == Entity("2")
+
+        def pr_get_person_with_field_value(self):
+            repo = PersonRepo([self.person])
             try:
-                assert commandsRepo.get_command_with_id(1)
+                assert repo.get_person_with_field_value("name", "vasile") == self.person
+            except:
+                assert False
+            try:
+                repo.get_person_with_field_value("ceva", "altceva")
                 assert False
             except:
                 assert True
 
-    class RepoTest:
-        from framework.repos import Repo
+        def er_get_person_with_field_value(self):
+            repo = EventRepo([self.event])
+            try:
+                assert repo.get_event_with_field_value("day", "2") == self.event
+            except:
+                assert False
+            try:
+                repo.get_event_with_field_value("ceva", "altceva")
+                assert False
+            except:
+                assert True
 
-        def run_all(self):
-            self.add_test()
-            self.count_test()
+        def ar_get_free_id(self):
+            repo = AttendanceRepo([])
+            assert repo.get_free_id() == 0
 
-        def add_test(self):
-            repo = self.Repo(1, 2, 3)
-            repo.add(4)
-            assert repo.get_items() == [1,2,3,4]
-            assert not repo.get_items() == [1,2,3]
+        def ar_get_attendances_with_person(self):
+            repo = AttendanceRepo([self.attendance])
+            assert repo.get_attendances_with_person(self.person) == self.attendance
 
-        def count_test(self):
-            repo = self.Repo(1, 2, 3)
-            assert repo.count() == 3
-            assert not repo.count() == 0
-
-    class ValidatorTest:
-        from framework.validators import Validator
-        from framework.repos import IdRepo
-        from domain.entities import Id, Name, CityName, StreetName, Number, Adress, Person
+    class ValidatorsTests:
 
         def run_all(self):
             self.validate_person_test()
@@ -165,28 +205,46 @@ class Tests:
 
     #------------------
 
+    @property
+    def services_tests(self):
+        return self._services_tests
+    @services_tests.setter
+    def services_tests(self, value):
+        self._services_tests = value
+
+    @property
+    def repos_tests(self):
+        return self._repos_tests
+    @repos_tests.setter
+    def repos_tests(self, value):
+        self._repos_tests = value
+
+    @property
+    def entities_tests(self):
+        return self._entities_tests
+    @entities_tests.setter
+    def entities_tests(self, value):
+        self._entities_tests = value
+
+    @property
+    def validators_tests(self):
+        return self._validators_tests
+    @validators_tests.setter
+    def validators_tests(self, value):
+        self._validators_tests = value
+
+    #------------------
+
     def __init__(self):
-        self._service_test = self.ServiceTest()
-        self._repo_test = self.RepoTest()
-        self._commands_repo_test = self.CommandsRepoTest()
-        self._validator_test = self.ValidatorTest()
-
-    def get_service_test(self):
-        return self._service_test
-
-    def get_repo_test(self):
-        return self._repo_test
-
-    def get_commands_repo_test(self):
-        return self._commands_repo_test
-
-    def get_validator_test(self):
-        return self._validator_test
+        self.services_tests = self.ServicesTests()
+        self.repos_tests = self.ReposTests()
+        self.entities_tests = self.EntitiesTests()
+        self.validators_tests = self.ValidatorsTests()
 
     #------------------
 
     def run_all(self):
-        self.get_validator_test().run_all()
-        self.get_repo_test().run_all()
-        self.get_commands_repo_test().run_all()
-        self.get_service_test().run_all()
+        self.services_tests.run_all()
+        self.repos_tests.run_all()
+        self.entities_tests.run_all()
+        self.validators_tests.run_all()

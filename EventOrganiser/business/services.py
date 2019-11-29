@@ -103,7 +103,7 @@ class EventService(Service):
 
     def modify_event(self, field, field_value, modified_event):
         try:
-            self.validator.validate_event(event)
+            self.validator.validate_event(modified_event)
             self.repo.modify(self.repo.get_event_with_field_value(field, field_value), modified_event)
             self.repo.save_to_json()
         except Exception as ex:

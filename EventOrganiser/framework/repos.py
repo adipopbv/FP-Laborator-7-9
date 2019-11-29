@@ -88,7 +88,7 @@ class CommandFileRepo(FileRepo):
             raise Exception(ex)
 
 
-class PersonFileRepo(FileRepo):
+class PersonRepo(Repo):
 
     def get_person_with_field_value(self, field, value):
         if field != "address":
@@ -100,6 +100,9 @@ class PersonFileRepo(FileRepo):
                     if getattr(person.address, field) == value:
                         return person
         raise Exception("No person with given field value")
+
+
+class PersonFileRepo(FileRepo, PersonRepo):
 
     def load_from_json(self):
         file = open(self.file_name, "r")
@@ -126,7 +129,7 @@ class PersonFileRepo(FileRepo):
             raise Exception(ex)
 
 
-class EventFileRepo(FileRepo):
+class EventRepo(Repo):
 
     def get_event_with_field_value(self, field, value):
         if field != "date":
@@ -138,6 +141,9 @@ class EventFileRepo(FileRepo):
                     if getattr(event.date, field) == value:
                         return event
         raise Exception("No event with given field value")
+
+
+class EventFileRepo(FileRepo, EventRepo):
 
     def load_from_json(self):
         file = open(self.file_name, "r")
@@ -165,7 +171,7 @@ class EventFileRepo(FileRepo):
             raise Exception(ex)
 
 
-class AttendanceFileRepo(FileRepo):
+class AttendanceRepo(Repo):
 
     def get_free_id(self):
         return len(self.items)
@@ -176,6 +182,9 @@ class AttendanceFileRepo(FileRepo):
             if attendance.person == person:
                 attendances.append(attendance)
         return attendances
+
+
+class AttendanceFileRepo(FileRepo, AttendanceRepo):
 
     def load_from_json(self):
         file = open(self.file_name, "r")

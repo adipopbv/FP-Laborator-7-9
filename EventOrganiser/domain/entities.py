@@ -116,6 +116,7 @@ class Person(Entity):
                     return True
         except:
             return False
+        return False
 
 
 class Event(Entity):
@@ -173,6 +174,7 @@ class Event(Entity):
                     return True
         except:
             return False
+        return False
 
 
 class Attendance(Entity):
