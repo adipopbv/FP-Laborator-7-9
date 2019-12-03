@@ -161,7 +161,7 @@ class ConsoleUI:
 
     def delete_person(self):
         try:
-            self.write("\nPerson to modify:")
+            self.write("\nPerson to delete:")
             field = self.read("    Please input a field to search by: ")
             field_value = self.read("    Please input the value: ")
             self.persons_service.delete_person(field, field_value)
