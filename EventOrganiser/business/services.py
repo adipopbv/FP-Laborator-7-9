@@ -109,6 +109,13 @@ class EventService(Service):
             raise Exception(ex)
         self.repo.save_to_json()
 
+    def delete_event(self, field, field_value):
+        try:
+            self.repo.delete(self.repo.get_event_with_field_value(field, field_value))
+            self.repo.save_to_json()
+        except Exception as ex:
+            raise Exception(ex)
+
     def modify_event(self, field, field_value, modified_event):
         try:
             self.validator.validate_event(modified_event)
