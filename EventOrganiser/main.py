@@ -6,7 +6,7 @@ from EventOrganiser.ui.uis import ConsoleUI
 
 tests = Tests()
 
-commands = CommandFileRepo("commands.json", [])
+commands = CommandFileRepo("commands.json")
 persons = PersonFileRepo("persons.json", [])
 events = EventFileRepo("events.json", [])
 attendances = AttendanceFileRepo("attendances.json", [])

@@ -1,19 +1,17 @@
 from EventOrganiser.business.services import PersonService, EventService, AttendanceService
 from EventOrganiser.domain.entities import Person, Event, Entity, Attendance
 from EventOrganiser.domain.fields import Address, Date
-from EventOrganiser.framework.repos import Repo, PersonRepo, EventRepo, AttendanceRepo
+from EventOrganiser.framework.repos import ModifiableRepo, PersonRepo, EventRepo, AttendanceRepo
 from EventOrganiser.framework.validators import Validator
 
 
 class Tests:
-
     class ServicesTests:
 
         def run_all(self):
             self.person_service()
 
         def person_service(self):
-
             def add_person():
                 validator = Validator()
                 pers_repo = PersonRepo([])
@@ -55,7 +53,6 @@ class Tests:
             search_person()
 
         def events_service(self):
-
             def add_event():
                 validator = Validator()
                 events_repo = EventRepo([])
@@ -106,7 +103,6 @@ class Tests:
             generate_random_events()
 
         def attendance_service(self):
-
             def add_attendance():
                 valid = Validator()
                 at_repo = AttendanceRepo([])
@@ -168,7 +164,6 @@ class Tests:
             first_20percent_events_with_most_attendees()
             persons_with_fewest_attendances()
 
-
     class EntitiesTests:
 
         def run_all(self):
@@ -196,21 +191,27 @@ class Tests:
         attendance = Attendance("0", person, event)
 
         def run_all(self):
-            self.repo_add()
-            self.repo_modify()
+            self.mr_add()
+            self.mr_delete()
+            self.mr_modify()
             self.pr_get_person_with_field_value()
             self.er_get_person_with_field_value()
             self.ar_get_free_id()
 
-        def repo_add(self):
-            repo = Repo([])
+        def mr_add(self):
+            repo = ModifiableRepo([])
             repo.add(Entity("2"))
             assert not len(repo.items) == 0
             assert repo.items[0] == Entity("2")
             assert not repo.items[0] == Entity("3")
 
-        def repo_modify(self):
-            repo = Repo([Entity("2")])
+        def mr_delete(self):
+            repo = ModifiableRepo([Entity("2")])
+            repo.delete(Entity("2"))
+            assert len(repo.items) == 0
+
+        def mr_modify(self):
+            repo = ModifiableRepo([Entity("2")])
             repo.modify(Entity("2"), Entity("3"))
             assert len(repo.items) == 1
             assert repo.items[0] == Entity("3")
@@ -269,7 +270,8 @@ class Tests:
                 assert False
             try:
                 self.validator.validate_person_from_repo(self.pers_repo,
-                                                         Person("1", "hbv78268g2", Address("223", "republicii", "q31v")))
+                                                         Person("1", "hbv78268g2",
+                                                                Address("223", "republicii", "q31v")))
                 assert False
             except:
                 assert True
@@ -277,7 +279,7 @@ class Tests:
         def validate_event_from_repo(self):
             try:
                 self.validator.validate_event_from_repo(self.ev_repo,
-                                                         Event("2", Date("2", "march", "2019"), "2:35", "nice party"))
+                                                        Event("2", Date("2", "march", "2019"), "2:35", "nice party"))
                 assert True
             except:
                 assert False
@@ -287,7 +289,8 @@ class Tests:
                 assert False
             except:
                 assert True
-    #------------------
+
+    # ------------------
 
     @property
     def services_tests(self):
@@ -317,7 +320,7 @@ class Tests:
     def validators_tests(self, value):
         self._validators_tests = value
 
-    #------------------
+    # ------------------
 
     def __init__(self):
         self.services_tests = self.ServicesTests()
@@ -325,7 +328,7 @@ class Tests:
         self.entities_tests = self.EntitiesTests()
         self.validators_tests = self.ValidatorsTests()
 
-    #------------------
+    # ------------------
 
     def run_all(self):
         self.services_tests.run_all()
