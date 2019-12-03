@@ -67,6 +67,13 @@ class PersonService(Service):
             raise Exception(ex)
         self.repo.save_to_json()
 
+    def delete_person(self, field, field_value):
+        try:
+            self.repo.delete(self.repo.get_person_with_field_value(field, field_value))
+            self.repo.save_to_json()
+        except Exception as ex:
+            raise Exception(ex)
+
     def modify_person(self, field, field_value, modified_person):
         try:
             self.validator.validate_person(modified_person)
@@ -101,6 +108,13 @@ class EventService(Service):
         except Exception as ex:
             raise Exception(ex)
         self.repo.save_to_json()
+
+    def delete_event(self, field, field_value):
+        try:
+            self.repo.delete(self.repo.get_event_with_field_value(field, field_value))
+            self.repo.save_to_json()
+        except Exception as ex:
+            raise Exception(ex)
 
     def modify_event(self, field, field_value, modified_event):
         try:
