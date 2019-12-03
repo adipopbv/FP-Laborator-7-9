@@ -27,6 +27,12 @@ class Repo:
     def add(self, entity):
         self.items.append(entity)
 
+    def delete(self, entity):
+        try:
+            self.items.remove(entity)
+        except Exception as ex:
+            raise Exception(ex)
+
     def modify(self, old_entity, new_entity):
         try:
             self.items[self.index_of(old_entity)] = new_entity

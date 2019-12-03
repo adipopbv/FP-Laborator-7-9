@@ -159,6 +159,16 @@ class ConsoleUI:
         except Exception as ex:
             self.write_exception(ex)
 
+    def delete_person(self):
+        try:
+            self.write("\nPerson to modify:")
+            field = self.read("    Please input a field to search by: ")
+            field_value = self.read("    Please input the value: ")
+            self.persons_service.delete_person(field, field_value)
+            self.write_success()
+        except Exception as ex:
+            self.write_exception(ex)
+
     def modify_person(self):
         try:
             self.write("\nPerson to modify:")
