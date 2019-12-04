@@ -1,5 +1,6 @@
 from EventOrganiser.domain.entities import Command, Person, Event, Attendance
-from EventOrganiser.domain.exceptions import NotInRepoException, NoFieldWithValueException, EmptyRepoException
+from EventOrganiser.domain.exceptions import NotInRepoException, NoFieldWithValueException, EmptyRepoException, \
+    NotPersonException
 from EventOrganiser.domain.fields import Address, Date
 from EventOrganiser.framework.json_tools import JsonFileSaver
 
@@ -222,9 +223,14 @@ class AttendanceRepo(ModifiableRepo):
 
     def get_attendances_with_person(self, person: Person):
         attendances = []
+        if len(self.items) == 0:
+            raise EmptyRepoException
         for attendance in self.items:
-            if attendance.person == person:
-                attendances.append(attendance)
+            try:
+                if attendance.person == person:
+                    attendances.append(attendance)
+            except:
+                raise NotPersonException
         return attendances
 
 
