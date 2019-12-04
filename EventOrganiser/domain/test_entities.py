@@ -1,5 +1,5 @@
 import unittest
-from EventOrganiser.domain.entities import Command, Entity, Person, Event
+from EventOrganiser.domain.entities import Command, Entity, Person, Event, Attendance
 from EventOrganiser.domain.exceptions import NotListException
 from EventOrganiser.domain.fields import Address, Date
 
@@ -87,6 +87,21 @@ class TestCaseEvent(unittest.TestCase):
         self.assertTrue(self.event.has_field_with_value("month", "month"))
         self.assertFalse(self.event.has_field_with_value("month", "no"))
         self.assertFalse(self.event.has_field_with_value("date", "month"))
+
+
+class TestCaseAttendance(unittest.TestCase):
+    def setUp(self):
+        self.person = Person("id", "name", Address("city", "street", "number"))
+        self.event = Event("id", Date("1", "month", "2000"), "duration", "description")
+        self.attendance = Attendance("id", self.person, self.event)
+
+    def test_to_json(self):
+        d = {
+            "id": "id",
+            "person": self.person.to_json(),
+            "event": self.event.to_json()
+        }
+        self.assertEqual(self.attendance.to_json(), d)
 
 
 if __name__ == '__main__':
