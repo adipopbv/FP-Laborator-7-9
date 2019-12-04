@@ -1,7 +1,7 @@
 import unittest
-from EventOrganiser.domain.entities import Command, Entity, Person
+from EventOrganiser.domain.entities import Command, Entity, Person, Event
 from EventOrganiser.domain.exceptions import NotListException
-from EventOrganiser.domain.fields import Address
+from EventOrganiser.domain.fields import Address, Date
 
 
 class TestCaseCommand(unittest.TestCase):
@@ -60,6 +60,33 @@ class TestCasePerson(unittest.TestCase):
         self.assertTrue(self.person.not_in_list([1, "stuff"]))
         self.assertFalse(self.person.not_in_list([self.person, 2]))
         self.assertRaises(NotListException, self.person.not_in_list, 12)
+
+
+class TestCaseEvent(unittest.TestCase):
+    def setUp(self):
+        self.date = Date("1", "month", "2000")
+        self.event = Event("id", self.date, "duration", "description")
+
+    def test_equal(self):
+        e = Event("id", Date("1", "month", "2000"), "duration", "description")
+        self.assertTrue(self.event == e)
+
+    def test_to_json(self):
+        d = {
+            "id": "id",
+            "date": self.date.to_json(),
+            "duration": "duration",
+            "description": "description"
+        }
+        self.assertEqual(self.event.to_json(), d)
+
+    def test_has_field_with_value(self):
+        self.assertTrue(self.event.has_field_with_value("id", "id"))
+        self.assertFalse(self.event.has_field_with_value("id", "no"))
+        self.assertFalse(self.event.has_field_with_value("no", "id"))
+        self.assertTrue(self.event.has_field_with_value("month", "month"))
+        self.assertFalse(self.event.has_field_with_value("month", "no"))
+        self.assertFalse(self.event.has_field_with_value("date", "month"))
 
 
 if __name__ == '__main__':
