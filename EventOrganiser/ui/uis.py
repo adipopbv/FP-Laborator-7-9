@@ -46,7 +46,7 @@ class ConsoleUI:
     def gui(self, value):
         self._gui = value
 
-    #------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------
 
     def __init__(self, commands_service, persons_service, events_service, attendances_service):
         self.commands_service = commands_service
@@ -54,12 +54,8 @@ class ConsoleUI:
         self.events_service = events_service
         self.attendances_service = attendances_service
         self.gui = ConsoleGUI()
-        # self.commands = Repo(
-        #     Command("exit_application", "Closes the application.", "0", "exit"),
-        #     Command("add_person", "Adds a person to the repo.", "1", "add person")
-        # )
 
-    def read(self, prompt):
+    def read(self, prompt: str):
         return self.gui.read(prompt)
 
     def read_command(self):
@@ -97,7 +93,7 @@ class ConsoleUI:
         )
         return person
 
-    def write(self, message):
+    def write(self, message: str):
         self.gui.write(message)
 
     def write_person(self, person: Person):
@@ -130,7 +126,7 @@ class ConsoleUI:
     def write_success(self):
         self.write("\nOperation successful!")
 
-    def write_exception(self, exception):
+    def write_exception(self, exception: Exception):
         self.gui.write("\nError: " + str(exception) + ".\nOperation failed!")
 
     def write_menu(self):
@@ -141,148 +137,101 @@ class ConsoleUI:
                 keys += str(key) + "/"
             self.write(" - [" + str(keys[0:-1]) + "]: " + command.description)
 
-    #----------------------------------------------
+    # ----------------------------------------------
 
     def add_person(self):
-        try:
-            person = self.read_person()
-            self.persons_service.add_person(person)
-            self.write_success()
-        except Exception as ex:
-            self.write_exception(ex)
+        person = self.read_person()
+        self.persons_service.add_person(person)
 
     def add_event(self):
-        try:
-            event = self.read_event()
-            self.events_service.add_event(event)
-            self.write_success()
-        except Exception as ex:
-            self.write_exception(ex)
+        event = self.read_event()
+        self.events_service.add_event(event)
 
     def delete_person(self):
-        try:
-            self.write("\nPerson to delete:")
-            field = self.read("    Please input a field to search by: ")
-            field_value = self.read("    Please input the value: ")
-            self.persons_service.delete_person(field, field_value)
-            self.write_success()
-        except Exception as ex:
-            self.write_exception(ex)
+        self.write("\nPerson to delete:")
+        field = self.read("    Please input a field to search by: ")
+        field_value = self.read("    Please input the value: ")
+        self.persons_service.delete_person(field, field_value)
 
     def delete_event(self):
-        try:
-            self.write("\nEvent to delete:")
-            field = self.read("    Please input a field to search by: ")
-            field_value = self.read("    Please input the value: ")
-            self.events_service.delete_event(field, field_value)
-            self.write_success()
-        except Exception as ex:
-            self.write_exception(ex)
+        self.write("\nEvent to delete:")
+        field = self.read("    Please input a field to search by: ")
+        field_value = self.read("    Please input the value: ")
+        self.events_service.delete_event(field, field_value)
 
     def modify_person(self):
-        try:
-            self.write("\nPerson to modify:")
-            field = self.read("    Please input a field to search by: ")
-            field_value = self.read("    Please input the value: ")
-            self.write("\nModified person:")
-            modified_person = self.read_person()
-            self.persons_service.modify_person(field, field_value, modified_person)
-            self.write_success()
-        except Exception as ex:
-            self.write_exception(ex)
+        self.write("\nPerson to modify:")
+        field = self.read("    Please input a field to search by: ")
+        field_value = self.read("    Please input the value: ")
+        self.write("\nModified person:")
+        modified_person = self.read_person()
+        self.persons_service.modify_person(field, field_value, modified_person)
 
     def modify_event(self):
-        try:
-            self.write("\nEvent to modify:")
-            field = self.read("Please input a field to search by: ")
-            field_value = self.read("Please input the value: ")
-            self.write("\nModified event:")
-            modified_event = self.read_event()
-            self.events_service.modify_event(field, field_value, modified_event)
-            self.write_success()
-        except Exception as ex:
-            self.write_exception(ex)
+        self.write("\nEvent to modify:")
+        field = self.read("Please input a field to search by: ")
+        field_value = self.read("Please input the value: ")
+        self.write("\nModified event:")
+        modified_event = self.read_event()
+        self.events_service.modify_event(field, field_value, modified_event)
 
     def search_person(self):
-        try:
-            self.write("\nPerson to search:")
-            field = self.read("    Please input a field to search by: ")
-            field_value = self.read("    Please input the value: ")
-            persons = self.persons_service.search_person(field, field_value)
-            self.write_persons(persons)
-        except Exception as ex:
-            self.write_exception(ex)
+        self.write("\nPerson to search:")
+        field = self.read("    Please input a field to search by: ")
+        field_value = self.read("    Please input the value: ")
+        persons = self.persons_service.search_person(field, field_value)
+        self.write_persons(persons)
 
     def search_event(self):
-        try:
-            self.write("\nEvent to search:")
-            field = self.read("    Please input a field to search by: ")
-            field_value = self.read("    Please input the value: ")
-            events = self.events_service.search_event(field, field_value)
-            self.write_events(events)
-        except Exception as ex:
-            self.write_exception(ex)
+        self.write("\nEvent to search:")
+        field = self.read("    Please input a field to search by: ")
+        field_value = self.read("    Please input the value: ")
+        events = self.events_service.search_event(field, field_value)
+        self.write_events(events)
 
     def enroll_person(self):
-        try:
-            person_id = self.read("Please input the person's id: ")
-            event_id = self.read("Please input the id of the event: ")
-            attendance = Attendance(
-                self.attendances_service.repo.get_free_id(),
-                self.persons_service.search_person("id", person_id)[0],
-                self.events_service.search_event("id", event_id)[0]
-            )
-            self.attendances_service.add_attendance(attendance)
-            self.write_success()
-        except Exception as ex:
-            self.write_exception(ex)
+        person_id = self.read("Please input the person's id: ")
+        event_id = self.read("Please input the id of the event: ")
+        attendance = Attendance(
+            self.attendances_service.repo.get_free_id(),
+            self.persons_service.search_person("id", person_id)[0],
+            self.events_service.search_event("id", event_id)[0]
+        )
+        self.attendances_service.add_attendance(attendance)
 
     def ordered_events_attended_by_person(self):
-        try:
-            person_id = self.read("Please input the person's id: ")
-            events = self.attendances_service.get_ordered_events_attended_by_person(
-                self.persons_service.search_person("id", person_id)[0])
-            self.write_events(events)
-        except Exception as ex:
-            self.write_exception(ex)
+        person_id = self.read("Please input the person's id: ")
+        events = self.attendances_service.get_ordered_events_attended_by_person(
+            self.persons_service.search_person("id", person_id)[0])
+        self.write_events(events)
 
     def persons_attending_most_events(self):
-        try:
-            persons = self.attendances_service.persons_attending_most_events()
-            self.write_persons(persons)
-        except Exception as ex:
-            self.write_exception(ex)
+        persons = self.attendances_service.persons_attending_most_events()
+        self.write_persons(persons)
 
     def first_20percent_events_with_most_attendees(self):
-        try:
-            events = self.attendances_service.first_20percent_events_with_most_attendees()
-            self.write_events(events)
-        except Exception as ex:
-            self.write_exception(ex)
+        events = self.attendances_service.first_20percent_events_with_most_attendees()
+        self.write_events(events)
 
     def generate_random_events(self):
-        try:
-            number_of_events = int(self.read("Please imput the number of random events to be generated: "))
-            self.events_service.generate_random_events(number_of_events)
-            self.write_success()
-        except Exception as ex:
-            self.write_exception(ex)
+        number_of_events = int(self.read("Please input the number of random events to be generated: "))
+        self.events_service.generate_random_events(number_of_events)
 
-    def persons_with_fewest_attendances(self):
-        try:
-            persons = self.attendances_service.persons_with_fewest_attendances(self.persons_service.repo.items)
-
-            self.write_persons(persons)
-        except Exception as ex:
-            self.write_exception(ex)
+    def persons_attending_least_events(self):
+        persons = self.attendances_service.persons_attending_least_events(self.persons_service.repo.items)
+        self.write_persons(persons)
 
     def exit_application(self):
         exit()
 
-    #----------------------------------------------
+    # ----------------------------------------------
 
     def run_application(self):
         while True:
             self.write_menu()
             input_command = self.read_command()
-            input_command.run(self)
+            try:
+                input_command.run(self)
+                self.write_success()
+            except Exception as ex:
+                self.write_exception(ex)

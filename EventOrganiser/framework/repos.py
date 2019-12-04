@@ -1,6 +1,6 @@
 from EventOrganiser.domain.entities import Command, Person, Event, Attendance
 from EventOrganiser.domain.fields import Address, Date
-from EventOrganiser.framework.json_tools import JsonSaver
+from EventOrganiser.framework.json_tools import JsonFileSaver
 
 
 class Repo:
@@ -24,46 +24,27 @@ class Repo:
         except:
             raise Exception("Item not found in repo")
 
+
+class ModifiableRepo(Repo):
+
     def add(self, entity):
         self.items.append(entity)
 
     def delete(self, entity):
-        try:
-            self.items.remove(entity)
-        except Exception as ex:
-            raise Exception(ex)
+        self.items.remove(entity)
 
     def modify(self, old_entity, new_entity):
-        try:
-            self.items[self.index_of(old_entity)] = new_entity
-        except Exception as ex:
-            raise Exception(ex)
-
-    def load_from_json(self):
-        pass
-
-    def save_to_json(self):
-        pass
+        self.items[self.index_of(old_entity)] = new_entity
 
 
-class FileRepo(Repo, JsonSaver):
-
-    _file_name: str
-    @property
-    def file_name(self):
-        return self._file_name
-    @file_name.setter
-    def file_name(self, value):
-        self._file_name = value
-
-    # ----------------------------------
+class FileRepo(Repo, JsonFileSaver):
 
     def __init__(self, file_name: str, items: list):
-        super().__init__(items)
-        self.file_name = file_name
-        # self.load_from_json()
+        Repo.__init__(self, items)
+        JsonFileSaver.__init__(self, file_name)
+        self.load_from_file()
 
-    def save_to_json(self):
+    def save_to_file(self):
         file = open(self.file_name, "w")
         try:
             data_list = [item.to_json() for item in self.items]
@@ -74,13 +55,14 @@ class FileRepo(Repo, JsonSaver):
             file.close()
             raise Exception(ex)
 
-    def load_from_json(self):
-        pass
-
 
 class CommandFileRepo(FileRepo):
 
-    def load_from_json(self):
+    def __init__(self, file_name: str):
+        super().__init__(file_name, [])
+        self.load_from_file()
+
+    def load_from_file(self):
         file = open(self.file_name, "r")
         try:
             file_string = file.read()
@@ -100,7 +82,38 @@ class CommandFileRepo(FileRepo):
             raise Exception(ex)
 
 
-class PersonRepo(Repo):
+class ModifiableFileRepo(ModifiableRepo, JsonFileSaver):
+
+    def __init__(self, file_name: str, items: list):
+        ModifiableRepo.__init__(self, items)
+        JsonFileSaver.__init__(self, file_name)
+        self.load_from_file()
+
+    def add(self, entity):
+        super().add(entity)
+        self.save_to_file()
+
+    def delete(self, entity):
+        super().delete(entity)
+        self.save_to_file()
+
+    def modify(self, old_entity, new_entity):
+        super().modify(old_entity, new_entity)
+        self.save_to_file()
+
+    def save_to_file(self):
+        file = open(self.file_name, "w")
+        try:
+            data_list = [item.to_json() for item in self.items]
+            data = self.json.dumps(data_list, indent=4)
+            file.write(data)
+            file.close()
+        except Exception as ex:
+            file.close()
+            raise Exception(ex)
+
+
+class PersonRepo(ModifiableRepo):
 
     def get_person_with_field_value(self, field, value):
         if field != "address":
@@ -114,9 +127,13 @@ class PersonRepo(Repo):
         raise Exception("No person with given field value")
 
 
-class PersonFileRepo(FileRepo, PersonRepo):
+class PersonFileRepo(ModifiableFileRepo, PersonRepo):
 
-    def load_from_json(self):
+    def __init__(self, file_name: str, items: list):
+        ModifiableFileRepo.__init__(self, file_name, items)
+        self.load_from_file()
+
+    def load_from_file(self):
         file = open(self.file_name, "r")
         try:
             file_string = file.read()
@@ -141,7 +158,7 @@ class PersonFileRepo(FileRepo, PersonRepo):
             raise Exception(ex)
 
 
-class EventRepo(Repo):
+class EventRepo(ModifiableRepo):
 
     def get_event_with_field_value(self, field, value):
         if field != "date":
@@ -155,7 +172,11 @@ class EventRepo(Repo):
         raise Exception("No event with given field value")
 
 
-class EventFileRepo(FileRepo, EventRepo):
+class EventFileRepo(ModifiableFileRepo, EventRepo):
+
+    def __init__(self, file_name: str, items: list):
+        ModifiableFileRepo.__init__(self, file_name, items)
+        self.load_from_file()
 
     def load_from_json(self):
         file = open(self.file_name, "r")
@@ -183,7 +204,7 @@ class EventFileRepo(FileRepo, EventRepo):
             raise Exception(ex)
 
 
-class AttendanceRepo(Repo):
+class AttendanceRepo(ModifiableRepo):
 
     def get_free_id(self):
         return len(self.items)
@@ -196,7 +217,11 @@ class AttendanceRepo(Repo):
         return attendances
 
 
-class AttendanceFileRepo(FileRepo, AttendanceRepo):
+class AttendanceFileRepo(ModifiableFileRepo, AttendanceRepo):
+
+    def __init__(self, file_name: str, items: list):
+        ModifiableFileRepo.__init__(self, file_name, items)
+        self.load_from_file()
 
     def load_from_json(self):
         file = open(self.file_name, "r")

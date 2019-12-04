@@ -1,10 +1,10 @@
 from EventOrganiser.domain.entities import Person, Event, Attendance
-from EventOrganiser.framework.repos import PersonFileRepo, EventFileRepo, AttendanceFileRepo
+from EventOrganiser.framework.repos import PersonRepo, EventRepo
 
 
 class Validator:
 
-    def validate_person_from_repo(self, repo: PersonFileRepo, person: Person):
+    def validate_person_from_repo(self, repo: PersonRepo, person: Person):
         ok = True
         try:
             repo.get_person_with_field_value("id", person.id)
@@ -31,7 +31,7 @@ class Validator:
         if not ok:
             raise Exception("Invalid person data")
 
-    def validate_event_from_repo(self, repo: EventFileRepo, event: Event):
+    def validate_event_from_repo(self, repo: EventRepo, event: Event):
         ok = True
         try:
             repo.get_event_with_field_value("id", event.id)
