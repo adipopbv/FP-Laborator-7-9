@@ -1,5 +1,4 @@
 import unittest
-
 from EventOrganiser.domain.exceptions import NotIntParameterException
 from EventOrganiser.framework.randomization import Random
 

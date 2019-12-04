@@ -27,3 +27,23 @@ class NotListException(AppException):
 class NotPersonException(AppException):
     def __init__(self):
         super().__init__("The type is not a person")
+
+
+class ExistentIdException(AppException):
+    def __init__(self):
+        super().__init__("Entity with given id already in repo")
+
+
+class InvalidPersonDataException(AppException):
+    def __init__(self):
+        super().__init__("Invalid person data")
+
+
+class InvalidEventDataException(AppException):
+    def __init__(self):
+        super().__init__("Invalid event data")
+
+
+class InvalidAttendanceDataException(AppException):
+    def __init__(self):
+        super().__init__("Invalid attendance data")
