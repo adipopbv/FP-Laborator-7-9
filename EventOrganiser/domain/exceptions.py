@@ -14,6 +14,11 @@ class AppException(Exception):
         return str(self.message)
 
 
+class NotIntParameterException(AppException):
+    def __init__(self):
+        super().__init__("The parameter is not an int")
+
+
 class NotListException(AppException):
     def __init__(self):
         super().__init__("The type is not a list")
