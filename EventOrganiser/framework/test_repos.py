@@ -15,5 +15,26 @@ class TestCaseRepo(unittest.TestCase):
         self.assertRaises(NotInRepoException, self.repo.index_of, Entity("otherId"))
 
 
+class TestCaseModifiableRepo(unittest.TestCase):
+    def setUp(self):
+        self.entity = Entity("id")
+        self.repo = ModifiableRepo([self.entity])
+
+    def test_add(self):
+        e = Entity("otherId")
+        self.repo.add(e)
+        self.assertIn(e, self.repo.items)
+
+    def test_delete(self):
+        self.repo.delete(self.entity)
+        self.assertNotIn(self.entity, self.repo.items)
+
+    def test_modify(self):
+        e = Entity("otherId")
+        self.repo.modify(self.entity, e)
+        self.assertIn(e, self.repo.items)
+        self.assertNotIn(self.entity, self.repo.items)
+
+
 if __name__ == '__main__':
     unittest.main()
