@@ -32,7 +32,10 @@ class ModifiableRepo(Repo):
         self.items.append(entity)
 
     def delete(self, entity):
-        self.items.remove(entity)
+        try:
+            self.items.remove(entity)
+        except:
+            raise NotInRepoException
 
     def modify(self, old_entity, new_entity):
         self.items[self.index_of(old_entity)] = new_entity

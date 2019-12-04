@@ -28,12 +28,14 @@ class TestCaseModifiableRepo(unittest.TestCase):
     def test_delete(self):
         self.repo.delete(self.entity)
         self.assertNotIn(self.entity, self.repo.items)
+        self.assertRaises(NotInRepoException, self.repo.delete, self.entity)
 
     def test_modify(self):
         e = Entity("otherId")
         self.repo.modify(self.entity, e)
         self.assertIn(e, self.repo.items)
         self.assertNotIn(self.entity, self.repo.items)
+        self.assertRaises(NotInRepoException, self.repo.modify, self.entity, e)
 
 
 class TestCasePersonRepo(unittest.TestCase):
