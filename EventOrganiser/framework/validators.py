@@ -1,6 +1,5 @@
 from EventOrganiser.domain.entities import Person, Event, Attendance
-from EventOrganiser.domain.exceptions import ExistentIdException, InvalidPersonDataException, InvalidEventDataException, \
-    InvalidAttendanceDataException
+from EventOrganiser.domain.exceptions import *
 from EventOrganiser.framework.repos import PersonRepo, EventRepo
 
 
@@ -18,6 +17,8 @@ class Validator:
 
     def validate_person(self, person: Person):
         ok = True
+        if type(person) is not Person:
+            raise NotPersonException
         try:
             int(person.name)
             ok = False
@@ -43,6 +44,8 @@ class Validator:
 
     def validate_event(self, event: Event):
         ok = True
+        if type(event) is not Event:
+            raise NotEventException
         try:
             int(event.date.year)
             try:

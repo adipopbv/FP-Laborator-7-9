@@ -29,6 +29,11 @@ class NotPersonException(AppException):
         super().__init__("The type is not a person")
 
 
+class NotEventException(AppException):
+    def __init__(self):
+        super().__init__("The type is not an event")
+
+
 class ExistentIdException(AppException):
     def __init__(self):
         super().__init__("Entity with given id already in repo")
