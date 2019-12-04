@@ -1,5 +1,5 @@
 import unittest
-from EventOrganiser.domain.exceptions import NotInRepoException
+from EventOrganiser.domain.exceptions import NotInRepoException, NoFieldWithValueException, EmptyRepoException
 from EventOrganiser.framework.repos import Repo, ModifiableRepo, PersonRepo, EventRepo, AttendanceRepo
 from EventOrganiser.domain.entities import Entity, Person, Event, Attendance
 from EventOrganiser.domain.fields import Address, Date
@@ -34,6 +34,21 @@ class TestCaseModifiableRepo(unittest.TestCase):
         self.repo.modify(self.entity, e)
         self.assertIn(e, self.repo.items)
         self.assertNotIn(self.entity, self.repo.items)
+
+
+class TestCasePersonRepo(unittest.TestCase):
+    def setUp(self):
+        self.person = Person("id", "name", Address("city", "street", "number"))
+        self.repo = PersonRepo([self.person])
+
+    def test_get_person_whit_field_value(self):
+        self.assertEqual(self.repo.get_person_with_field_value("id", "id"), self.person)
+        self.assertEqual(self.repo.get_person_with_field_value("street", "street"), self.person)
+        self.assertRaises(NoFieldWithValueException, self.repo.get_person_with_field_value, "id", "no")
+        self.assertRaises(NoFieldWithValueException, self.repo.get_person_with_field_value, "no", "id")
+        self.assertRaises(NoFieldWithValueException, self.repo.get_person_with_field_value, "address", "no")
+        self.repo.items = []
+        self.assertRaises(EmptyRepoException, self.repo.get_person_with_field_value, "any", "any")
 
 
 if __name__ == '__main__':

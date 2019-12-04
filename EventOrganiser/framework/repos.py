@@ -1,5 +1,5 @@
 from EventOrganiser.domain.entities import Command, Person, Event, Attendance
-from EventOrganiser.domain.exceptions import NotInRepoException
+from EventOrganiser.domain.exceptions import NotInRepoException, NoFieldWithValueException, EmptyRepoException
 from EventOrganiser.domain.fields import Address, Date
 from EventOrganiser.framework.json_tools import JsonFileSaver
 
@@ -118,14 +118,19 @@ class PersonRepo(ModifiableRepo):
 
     def get_person_with_field_value(self, field, value):
         if field != "address":
+            if len(self.items) == 0:
+                raise EmptyRepoException
             for person in self.items:
                 try:
                     if getattr(person, field) == value:
                         return person
                 except:
-                    if getattr(person.address, field) == value:
-                        return person
-        raise Exception("No person with given field value")
+                    try:
+                        if getattr(person.address, field) == value:
+                            return person
+                    except:
+                        pass
+        raise NoFieldWithValueException
 
 
 class PersonFileRepo(ModifiableFileRepo, PersonRepo):
