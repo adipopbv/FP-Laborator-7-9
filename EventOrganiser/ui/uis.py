@@ -46,7 +46,7 @@ class ConsoleUI:
     def gui(self, value):
         self._gui = value
 
-    #------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------
 
     def __init__(self, commands_service, persons_service, events_service, attendances_service):
         self.commands_service = commands_service
@@ -137,7 +137,7 @@ class ConsoleUI:
                 keys += str(key) + "/"
             self.write(" - [" + str(keys[0:-1]) + "]: " + command.description)
 
-    #----------------------------------------------
+    # ----------------------------------------------
 
     def add_person(self):
         person = self.read_person()
@@ -224,7 +224,7 @@ class ConsoleUI:
     def exit_application(self):
         exit()
 
-    #----------------------------------------------
+    # ----------------------------------------------
 
     def run_application(self):
         while True:
