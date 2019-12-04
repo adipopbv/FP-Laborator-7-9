@@ -51,5 +51,20 @@ class TestCasePersonRepo(unittest.TestCase):
         self.assertRaises(EmptyRepoException, self.repo.get_person_with_field_value, "any", "any")
 
 
+class TestCaseEventRepo(unittest.TestCase):
+    def setUp(self):
+        self.event = Event("id", Date("12", "month", "2019"), "duration", "description")
+        self.repo = EventRepo([self.event])
+
+    def test_get_event_whit_field_value(self):
+        self.assertEqual(self.repo.get_event_with_field_value("id", "id"), self.event)
+        self.assertEqual(self.repo.get_event_with_field_value("month", "month"), self.event)
+        self.assertRaises(NoFieldWithValueException, self.repo.get_event_with_field_value, "id", "no")
+        self.assertRaises(NoFieldWithValueException, self.repo.get_event_with_field_value, "no", "id")
+        self.assertRaises(NoFieldWithValueException, self.repo.get_event_with_field_value, "date", "no")
+        self.repo.items = []
+        self.assertRaises(EmptyRepoException, self.repo.get_event_with_field_value, "any", "any")
+
+
 if __name__ == '__main__':
     unittest.main()

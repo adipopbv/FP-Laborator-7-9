@@ -168,14 +168,19 @@ class EventRepo(ModifiableRepo):
 
     def get_event_with_field_value(self, field, value):
         if field != "date":
+            if len(self.items) == 0:
+                raise EmptyRepoException
             for event in self.items:
                 try:
                     if getattr(event, field) == value:
                         return event
                 except:
-                    if getattr(event.date, field) == value:
-                        return event
-        raise Exception("No event with given field value")
+                    try:
+                        if getattr(event.date, field) == value:
+                            return event
+                    except:
+                        pass
+        raise NoFieldWithValueException
 
 
 class EventFileRepo(ModifiableFileRepo, EventRepo):
