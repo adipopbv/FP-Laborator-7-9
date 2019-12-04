@@ -1,4 +1,5 @@
 from EventOrganiser.domain.entities import Command, Person, Event, Attendance
+from EventOrganiser.domain.exceptions import NotInRepoException
 from EventOrganiser.domain.fields import Address, Date
 from EventOrganiser.framework.json_tools import JsonFileSaver
 
@@ -22,7 +23,7 @@ class Repo:
         try:
             return self.items.index(entity)
         except:
-            raise Exception("Item not found in repo")
+            raise NotInRepoException
 
 
 class ModifiableRepo(Repo):

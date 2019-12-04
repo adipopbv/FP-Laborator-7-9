@@ -47,3 +47,8 @@ class InvalidEventDataException(AppException):
 class InvalidAttendanceDataException(AppException):
     def __init__(self):
         super().__init__("Invalid attendance data")
+
+
+class NotInRepoException(AppException):
+    def __init__(self):
+        super().__init__("Entity not in repo")
