@@ -1,3 +1,4 @@
+from EventOrganiser.domain.exceptions import NotListException
 from EventOrganiser.domain.fields import Address, Date
 from EventOrganiser.framework.json_tools import JsonFormattable
 
@@ -119,10 +120,16 @@ class Person(Entity):
         return False
 
     def not_in_list(self, persons):
-        for person in persons:
-            if person == self:
-                return False
-        return True
+        try:
+            for person in persons:
+                try:
+                    if person == self:
+                        return False
+                except:
+                    continue
+            return True
+        except:
+            raise NotListException
 
 
 class Event(Entity):
