@@ -1,6 +1,5 @@
 from EventOrganiser.domain.entities import Command, Person, Event, Attendance
-from EventOrganiser.domain.exceptions import NotInRepoException, NoFieldWithValueException, EmptyRepoException, \
-    NotPersonException
+from EventOrganiser.domain.exceptions import *
 from EventOrganiser.domain.fields import Address, Date
 from EventOrganiser.framework.json_tools import JsonFileSaver
 

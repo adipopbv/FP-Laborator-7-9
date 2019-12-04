@@ -1,7 +1,6 @@
 import unittest
 from EventOrganiser.domain.entities import Person, Event, Attendance
-from EventOrganiser.domain.exceptions import ExistentIdException, InvalidPersonDataException, \
-    InvalidEventDataException, InvalidAttendanceDataException
+from EventOrganiser.domain.exceptions import *
 from EventOrganiser.domain.fields import Address, Date
 from EventOrganiser.framework.repos import PersonRepo, EventRepo
 from EventOrganiser.framework.validators import Validator

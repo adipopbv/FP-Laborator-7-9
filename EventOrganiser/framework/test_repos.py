@@ -1,6 +1,5 @@
 import unittest
-from EventOrganiser.domain.exceptions import NotInRepoException, NoFieldWithValueException, EmptyRepoException, \
-    NotPersonException
+from EventOrganiser.domain.exceptions import *
 from EventOrganiser.framework.repos import Repo, ModifiableRepo, PersonRepo, EventRepo, AttendanceRepo
 from EventOrganiser.domain.entities import Entity, Person, Event, Attendance
 from EventOrganiser.domain.fields import Address, Date
