@@ -60,10 +60,16 @@ class FileRepo(Repo, JsonFileSaver):
             raise Exception(ex)
 
 
-class CommandFileRepo(FileRepo):
+class CommandRepo(Repo):
+
+    def __init__(self, commands: list):
+        super().__init__(commands)
+
+
+class CommandFileRepo(FileRepo, CommandRepo):
 
     def __init__(self, file_name: str):
-        super().__init__(file_name, [])
+        FileRepo.__init__(self, file_name, [])
         self.load_from_file()
 
     def load_from_file(self):

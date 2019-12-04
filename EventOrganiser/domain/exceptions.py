@@ -54,6 +54,11 @@ class NotInRepoException(AppException):
         super().__init__("Entity not in repo")
 
 
+class InexistentCommandException(AppException):
+    def __init__(self):
+        super().__init__("Command inexistent")
+
+
 class EmptyRepoException(AppException):
     def __init__(self):
         super().__init__("No entity in repo")

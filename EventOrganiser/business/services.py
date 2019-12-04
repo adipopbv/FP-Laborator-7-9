@@ -1,6 +1,7 @@
 from EventOrganiser.domain.entities import Attendance, Person, Event
 from EventOrganiser.domain.fields import Date
 from EventOrganiser.framework.validators import Validator
+from EventOrganiser.domain.exceptions import *
 
 
 class Service:
@@ -44,7 +45,7 @@ class CommandsService(Service):
             for key in command.keys:
                 if key == key_value:
                     return command
-        raise Exception("No command with the given key")
+        raise InexistentCommandException
 
 
 class PersonService(Service):
