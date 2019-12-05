@@ -1,10 +1,8 @@
 from EventOrganiser.business.services import CommandsService, PersonService, EventService, AttendanceService
 from EventOrganiser.framework.repos import CommandFileRepo, PersonFileRepo, EventFileRepo, AttendanceFileRepo
 from EventOrganiser.framework.validators import Validator
-# from EventOrganiser.tests import Tests
 from EventOrganiser.ui.uis import ConsoleUI
 
-# tests = Tests()
 
 commands = CommandFileRepo("commands.json")
 persons = PersonFileRepo("persons.json", [])
@@ -20,5 +18,4 @@ attendances_service = AttendanceService(validator, attendances)
 
 ui = ConsoleUI(commands_service, persons_service, events_service, attendances_service)
 
-# tests.run_all()
 ui.run_application()
