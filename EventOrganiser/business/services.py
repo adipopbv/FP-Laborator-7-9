@@ -1,6 +1,7 @@
 from EventOrganiser.domain.entities import Attendance, Person, Event
 from EventOrganiser.domain.fields import Date
 from EventOrganiser.framework.validators import Validator
+from EventOrganiser.domain.exceptions import *
 
 
 class Service:
@@ -44,7 +45,7 @@ class CommandsService(Service):
             for key in command.keys:
                 if key == key_value:
                     return command
-        raise Exception("No command with the given key")
+        raise InexistentCommandException
 
 
 class PersonService(Service):
@@ -119,9 +120,12 @@ class EventService(Service):
             except:
                 return generate_random_event()
 
-        for _ in range(0, number_of_events):
-            event = generate_random_event()
-            self.repo.add(event)
+        try:
+            for _ in range(0, number_of_events):
+                event = generate_random_event()
+                self.repo.add(event)
+        except:
+            raise NotIntParameterException
 
 
 class AttendanceService(Service):
@@ -157,6 +161,8 @@ class AttendanceService(Service):
                     return at_person
             return None
 
+        if len(self.repo.items) == 0:
+            raise EmptyRepoException
         at_persons = []
         for attendance in self.repo.items:
             at_person = get_person_in_list(attendance.person)
@@ -186,6 +192,8 @@ class AttendanceService(Service):
                     return at_event
             return None
 
+        if len(self.repo.items) == 0:
+            raise EmptyRepoException
         at_events = []
         for attendance in self.repo.items:
             at_event = get_event_in_list(attendance.event)
@@ -218,6 +226,8 @@ class AttendanceService(Service):
                     return at_person
             return None
 
+        if len(self.repo.items) == 0:
+            raise EmptyRepoException
         at_persons = []
         for attendance in self.repo.items:
             at_person = get_person_in_list(attendance.person)

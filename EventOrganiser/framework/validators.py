@@ -1,4 +1,5 @@
 from EventOrganiser.domain.entities import Person, Event, Attendance
+from EventOrganiser.domain.exceptions import *
 from EventOrganiser.framework.repos import PersonRepo, EventRepo
 
 
@@ -10,15 +11,14 @@ class Validator:
             repo.get_person_with_field_value("id", person.id)
             ok = False
         except:
-            try:
-                self.validate_person(person)
-            except Exception as ex:
-                raise Exception(ex)
+            self.validate_person(person)
         if not ok:
-            raise Exception("Person with id already in repo")
+            raise ExistentIdException
 
     def validate_person(self, person: Person):
         ok = True
+        if type(person) is not Person:
+            raise NotPersonException
         try:
             int(person.name)
             ok = False
@@ -29,7 +29,7 @@ class Validator:
             except:
                 pass
         if not ok:
-            raise Exception("Invalid person data")
+            raise InvalidPersonDataException
 
     def validate_event_from_repo(self, repo: EventRepo, event: Event):
         ok = True
@@ -37,16 +37,15 @@ class Validator:
             repo.get_event_with_field_value("id", event.id)
             ok = False
         except:
-            try:
-                self.validate_event(event)
-            except Exception as ex:
-                raise Exception(ex)
+            self.validate_event(event)
         if not ok:
-            raise Exception("Event with id already in repo")
+            raise ExistentIdException
 
 
     def validate_event(self, event: Event):
         ok = True
+        if type(event) is not Event:
+            raise NotEventException
         try:
             int(event.date.year)
             try:
@@ -56,11 +55,11 @@ class Validator:
         except:
             ok = False
         if not ok:
-            raise Exception("Invalid event data")
+            raise InvalidEventDataException
 
     def validate_attendance(self, attendance: Attendance):
         try:
             self.validate_person(attendance.person)
             self.validate_event(attendance.event)
-        except Exception as ex:
-            raise Exception(ex)
+        except:
+            raise InvalidAttendanceDataException

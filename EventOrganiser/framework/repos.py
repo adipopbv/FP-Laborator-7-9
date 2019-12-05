@@ -1,4 +1,5 @@
 from EventOrganiser.domain.entities import Command, Person, Event, Attendance
+from EventOrganiser.domain.exceptions import *
 from EventOrganiser.domain.fields import Address, Date
 from EventOrganiser.framework.json_tools import JsonFileSaver
 
@@ -22,7 +23,7 @@ class Repo:
         try:
             return self.items.index(entity)
         except:
-            raise Exception("Item not found in repo")
+            raise NotInRepoException
 
 
 class ModifiableRepo(Repo):
@@ -31,7 +32,10 @@ class ModifiableRepo(Repo):
         self.items.append(entity)
 
     def delete(self, entity):
-        self.items.remove(entity)
+        try:
+            self.items.remove(entity)
+        except:
+            raise NotInRepoException
 
     def modify(self, old_entity, new_entity):
         self.items[self.index_of(old_entity)] = new_entity
@@ -56,10 +60,16 @@ class FileRepo(Repo, JsonFileSaver):
             raise Exception(ex)
 
 
-class CommandFileRepo(FileRepo):
+class CommandRepo(Repo):
+
+    def __init__(self, commands: list):
+        super().__init__(commands)
+
+
+class CommandFileRepo(FileRepo, CommandRepo):
 
     def __init__(self, file_name: str):
-        super().__init__(file_name, [])
+        FileRepo.__init__(self, file_name, [])
         self.load_from_file()
 
     def load_from_file(self):
@@ -117,14 +127,19 @@ class PersonRepo(ModifiableRepo):
 
     def get_person_with_field_value(self, field, value):
         if field != "address":
+            if len(self.items) == 0:
+                raise EmptyRepoException
             for person in self.items:
                 try:
                     if getattr(person, field) == value:
                         return person
                 except:
-                    if getattr(person.address, field) == value:
-                        return person
-        raise Exception("No person with given field value")
+                    try:
+                        if getattr(person.address, field) == value:
+                            return person
+                    except:
+                        pass
+        raise NoFieldWithValueException
 
 
 class PersonFileRepo(ModifiableFileRepo, PersonRepo):
@@ -162,14 +177,19 @@ class EventRepo(ModifiableRepo):
 
     def get_event_with_field_value(self, field, value):
         if field != "date":
+            if len(self.items) == 0:
+                raise EmptyRepoException
             for event in self.items:
                 try:
                     if getattr(event, field) == value:
                         return event
                 except:
-                    if getattr(event.date, field) == value:
-                        return event
-        raise Exception("No event with given field value")
+                    try:
+                        if getattr(event.date, field) == value:
+                            return event
+                    except:
+                        pass
+        raise NoFieldWithValueException
 
 
 class EventFileRepo(ModifiableFileRepo, EventRepo):
@@ -211,9 +231,14 @@ class AttendanceRepo(ModifiableRepo):
 
     def get_attendances_with_person(self, person: Person):
         attendances = []
+        if len(self.items) == 0:
+            raise EmptyRepoException
         for attendance in self.items:
-            if attendance.person == person:
-                attendances.append(attendance)
+            try:
+                if attendance.person == person:
+                    attendances.append(attendance)
+            except:
+                raise NotPersonException
         return attendances
 
 
