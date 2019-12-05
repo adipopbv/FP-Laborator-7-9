@@ -83,5 +83,53 @@ class TestCaseEventService(unittest.TestCase):
         self.assertEqual(len(self.service.repo.items), 2)
 
 
+class TestCaseAttendanceService(unittest.TestCase):
+    def setUp(self):
+        address = Address("city", "street", "number")
+        self.person1 = Person("id1", "name1", address)
+        self.person2 = Person("id2", "name2", address)
+        date = Date("1", "street", "2000")
+        self.event1 = Event("id1", date, "duration1", "description1")
+        self.event2 = Event("id2", date, "duration2", "description2")
+        self.attendance1 = Attendance("1", self.person1, self.event1)
+        self.attendance2 = Attendance("2", self.person2, self.event1)
+        self.attendance3 = Attendance("3", self.person2, self.event2)
+        repo = AttendanceRepo([self.attendance1])
+        self.service = AttendanceService(Validator(), repo)
+
+    def test_add_attendance(self):
+        self.service.add_attendance(self.attendance2)
+        self.assertIn(self.attendance2, self.service.repo.items)
+        self.attendance3.person.address.city = "123"
+        self.assertRaises(InvalidAttendanceDataException, self.service.add_attendance, self.attendance3)
+        self.attendance3.event.date.day = []
+        self.assertRaises(InvalidAttendanceDataException, self.service.add_attendance, self.attendance3)
+
+    def test_get_ordered_events_attended_by_person(self):
+        self.service.repo = AttendanceRepo([self.attendance1, self.attendance2, self.attendance3])
+        self.assertRaises(NotPersonException, self.service.get_ordered_events_attended_by_person, 123)
+        self.assertEqual(self.service.get_ordered_events_attended_by_person(self.person2),
+                         [self.event1, self.event2])
+        self.service.repo.items = []
+        self.assertRaises(EmptyRepoException, self.service.get_ordered_events_attended_by_person, self.person1)
+
+    def test_persons_attending_most_events(self):
+        self.service.repo.items = []
+        self.assertRaises(EmptyRepoException, self.service.persons_attending_most_events)
+        self.service.repo = AttendanceRepo([self.attendance1, self.attendance2, self.attendance3])
+        self.assertEqual(self.service.persons_attending_most_events(), [self.person2])
+
+    def test_first_20percent_events_with_most_attendees(self):
+        self.service.repo.items = []
+        self.assertRaises(EmptyRepoException, self.service.first_20percent_events_with_most_attendees)
+        self.service.repo = AttendanceRepo([self.attendance1, self.attendance2, self.attendance3])
+        self.assertEqual(self.service.first_20percent_events_with_most_attendees(), [])
+
+    def test_persons_attending_least_events(self):
+        self.service.repo.items = []
+        self.assertRaises(EmptyRepoException, self.service.persons_attending_least_events, [])
+        self.service.repo = AttendanceRepo([self.attendance1, self.attendance2, self.attendance3])
+        self.assertEqual(self.service.persons_attending_least_events([self.person1, self.person2]), [self.person1])
+
 if __name__ == '__main__':
     unittest.main()

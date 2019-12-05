@@ -161,6 +161,8 @@ class AttendanceService(Service):
                     return at_person
             return None
 
+        if len(self.repo.items) == 0:
+            raise EmptyRepoException
         at_persons = []
         for attendance in self.repo.items:
             at_person = get_person_in_list(attendance.person)
@@ -190,6 +192,8 @@ class AttendanceService(Service):
                     return at_event
             return None
 
+        if len(self.repo.items) == 0:
+            raise EmptyRepoException
         at_events = []
         for attendance in self.repo.items:
             at_event = get_event_in_list(attendance.event)
@@ -222,6 +226,8 @@ class AttendanceService(Service):
                     return at_person
             return None
 
+        if len(self.repo.items) == 0:
+            raise EmptyRepoException
         at_persons = []
         for attendance in self.repo.items:
             at_person = get_person_in_list(attendance.person)
