@@ -120,9 +120,12 @@ class EventService(Service):
             except:
                 return generate_random_event()
 
-        for _ in range(0, number_of_events):
-            event = generate_random_event()
-            self.repo.add(event)
+        try:
+            for _ in range(0, number_of_events):
+                event = generate_random_event()
+                self.repo.add(event)
+        except:
+            raise NotIntParameterException
 
 
 class AttendanceService(Service):

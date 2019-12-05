@@ -23,7 +23,7 @@ class Random:
         try:
             string = ""
             for _ in range(0, length):
-                string += chr(self.int_in_range(0, 9))
+                string += str(self.int_in_range(0, 9))
             return string
         except:
             raise NotIntParameterException

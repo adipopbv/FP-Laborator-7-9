@@ -48,5 +48,40 @@ class TestCasePersonService(unittest.TestCase):
         self.assertEqual(self.service.search_person("ceva", "altceva"), [])
 
 
+class TestCaseEventService(unittest.TestCase):
+    def setUp(self):
+        date = Date("1", "street", "2000")
+        self.event = Event("id", date, "duration", "description")
+        repo = EventRepo([self.event])
+        self.service = EventService(Validator(), repo)
+
+    def test_add_event(self):
+        self.assertRaises(NotEventException, self.service.add_event, 123)
+        self.service.repo.items = []
+        self.service.add_event(self.event)
+        self.assertIn(self.event, self.service.repo.items)
+
+    def test_delete_event(self):
+        self.assertRaises(NoFieldWithValueException, self.service.delete_event, "ceva", "altceva")
+        self.service.delete_event("id", "id")
+        self.assertNotIn(self.event, self.service.repo.items)
+        self.assertRaises(EmptyRepoException, self.service.delete_event, "id", "id")
+
+    def test_modify_event(self):
+        event2 = Event("id2", Date("2", "month2", "2001"), "duration2", "description2")
+        self.assertRaises(NoFieldWithValueException, self.service.modify_event, "ceva", "ceva", event2)
+        self.assertRaises(NotEventException, self.service.modify_event, "id", "id", 123)
+        self.service.modify_event("id", "id", event2)
+        self.assertIn(event2, self.service.repo.items)
+        self.service.repo.items = []
+        self.assertRaises(EmptyRepoException, self.service.modify_event, "id", "id", event2)
+
+    def test_generate_random_events(self):
+        self.service.repo.items = []
+        self.assertRaises(NotIntParameterException, self.service.generate_random_events, "ceva")
+        self.service.generate_random_events(2)
+        self.assertEqual(len(self.service.repo.items), 2)
+
+
 if __name__ == '__main__':
     unittest.main()
