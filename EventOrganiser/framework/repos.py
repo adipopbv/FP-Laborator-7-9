@@ -198,7 +198,7 @@ class EventFileRepo(ModifiableFileRepo, EventRepo):
         ModifiableFileRepo.__init__(self, file_name, items)
         self.load_from_file()
 
-    def load_from_json(self):
+    def load_from_file(self):
         file = open(self.file_name, "r")
         try:
             file_string = file.read()
