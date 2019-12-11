@@ -192,32 +192,32 @@ class Event(Entity):
 
 class Attendance(Entity):
 
-    _person: Person
+    _person_id: str
     @property
-    def person(self):
-        return self._person
-    @person.setter
-    def person(self, value):
-        self._person = value
+    def person_id(self):
+        return self._person_id
+    @person_id.setter
+    def person_id(self, value):
+        self._person_id = value
 
-    _event: Event
+    _event_id: str
     @property
-    def event(self):
-        return self._event
-    @event.setter
-    def event(self, value):
-        self._event = value
+    def event_id(self):
+        return self._event_id
+    @event_id.setter
+    def event_id(self, value):
+        self._event_id = value
 
     #------------------------------------------------
 
-    def __init__(self, attendance_id: str, person: Person, event: Event):
+    def __init__(self, attendance_id: str, person_id: str, event_id: str):
         super().__init__(attendance_id)
-        self.person = person
-        self.event = event
+        self.person_id = person_id
+        self.event_id = event_id
 
     def to_json(self):
         return {
             "id": self.id,
-            "person": self.person.to_json(),
-            "event": self.event.to_json()
+            "person_id": self.person_id,
+            "event_id": self.event_id
         }
