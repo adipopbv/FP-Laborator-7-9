@@ -16,59 +16,64 @@ class AppException(Exception):
 
 class NotIntParameterException(AppException):
     def __init__(self):
-        super().__init__("The parameter is not an int")
+        self.message = "The parameter is not an int"
+
+
+class NotStringParameterException(AppException):
+    def __init__(self):
+        self.message = "The parameter is not a string"
 
 
 class NotListException(AppException):
     def __init__(self):
-        super().__init__("The type is not a list")
+        self.message = "The type is not a list"
 
 
 class NotPersonException(AppException):
     def __init__(self):
-        super().__init__("The type is not a person")
+        self.message = "The type is not a person"
 
 
 class NotEventException(AppException):
     def __init__(self):
-        super().__init__("The type is not an event")
+        self.message = "The type is not an event"
 
 
 class ExistentIdException(AppException):
     def __init__(self):
-        super().__init__("Entity with given id already in repo")
+        self.message = "Entity with given id already in repo"
 
 
 class InvalidPersonDataException(AppException):
     def __init__(self):
-        super().__init__("Invalid person data")
+        self.message = "Invalid person data"
 
 
 class InvalidEventDataException(AppException):
     def __init__(self):
-        super().__init__("Invalid event data")
+        self.message = "Invalid event data"
 
 
 class InvalidAttendanceDataException(AppException):
     def __init__(self):
-        super().__init__("Invalid attendance data")
+        self.message = "Invalid attendance data"
 
 
 class NotInRepoException(AppException):
     def __init__(self):
-        super().__init__("Entity not in repo")
+        self.message = "Entity not in repo"
 
 
 class InexistentCommandException(AppException):
     def __init__(self):
-        super().__init__("Command inexistent")
+        self.message = "Command inexistent"
 
 
 class EmptyRepoException(AppException):
     def __init__(self):
-        super().__init__("No entity in repo")
+        self.message = "No entity in repo"
 
 
 class NoFieldWithValueException(AppException):
     def __init__(self):
-        super().__init__("No field with the given value")
+        self.message = "No field with the given value"

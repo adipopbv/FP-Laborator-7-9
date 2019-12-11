@@ -16,10 +16,10 @@ class TestCaseValidator(unittest.TestCase):
 
     def test_validate_person_from_repo(self):
         p = Person("id", 1234, Address("5678", "street", "number"))
-        pr = PersonRepo([])
-        self.assertRaises(InvalidPersonDataException, self.validator.validate_person_from_repo, pr, p)
-        pr = PersonRepo([p])
-        self.assertRaises(ExistentIdException, self.validator.validate_person_from_repo, pr, p)
+        pl = []
+        self.assertRaises(InvalidPersonDataException, self.validator.validate_person_from_repo, pl, p)
+        pl = [p]
+        self.assertRaises(ExistentIdException, self.validator.validate_person_from_repo, pl, p)
 
     def test_validate_event(self):
         e = Event("id", Date([], "street", "year"), "duration", "description")
@@ -27,16 +27,16 @@ class TestCaseValidator(unittest.TestCase):
 
     def test_validate_event_from_repo(self):
         e = Event("id", Date([], "street", "year"), "duration", "description")
-        er = EventRepo([])
-        self.assertRaises(InvalidEventDataException, self.validator.validate_event_from_repo, er, e)
-        er = EventRepo([e])
-        self.assertRaises(ExistentIdException, self.validator.validate_event_from_repo, er, e)
+        el = []
+        self.assertRaises(InvalidEventDataException, self.validator.validate_event_from_repo, el, e)
+        el = [e]
+        self.assertRaises(ExistentIdException, self.validator.validate_event_from_repo, el, e)
 
     def test_validate_attendance(self):
         p = Person("id", 1234, Address("5678", "street", "number"))
         e = Event("id", Date([], "street", "year"), "duration", "description")
-        a = Attendance("id", p, e)
-        self.assertRaises(InvalidAttendanceDataException, self.validator.validate_attendance, a)
+        a = Attendance("id", "id1", "id2")
+        self.assertRaises(InvalidAttendanceDataException, self.validator.validate_attendance, [p], [e], a)
 
 
 if __name__ == '__main__':

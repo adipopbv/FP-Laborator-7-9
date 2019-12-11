@@ -105,9 +105,12 @@ class ConsoleUI:
         self.write("    Number: " + str(person.address.number))
 
     def write_persons(self, persons: list):
-        self.write("The requested persons:")
-        for person in persons:
-            self.write_person(person)
+        if len(persons) == 0:
+            self.write("No persons to display.")
+        else:
+            self.write("The requested persons:")
+            for person in persons:
+                self.write_person(person)
 
     def write_event(self, event: Event):
         self.write("---------------")
@@ -119,9 +122,12 @@ class ConsoleUI:
         self.write("Description: " + str(event.description))
 
     def write_events(self, events: list):
-        self.write("The requested events:")
-        for event in events:
-            self.write_event(event)
+        if len(events) == 0:
+            self.write("No events to display.")
+        else:
+            self.write("The requested events:")
+            for event in events:
+                self.write_event(event)
 
     def write_success(self):
         self.write("\nOperation successful!")
@@ -194,19 +200,22 @@ class ConsoleUI:
         event_id = self.read("Please input the id of the event: ")
         attendance = Attendance(
             self.attendances_service.repo.get_free_id(),
-            self.persons_service.search_person("id", person_id)[0],
-            self.events_service.search_event("id", event_id)[0]
+            person_id,
+            event_id
         )
         self.attendances_service.add_attendance(attendance)
 
     def ordered_events_attended_by_person(self):
         person_id = self.read("Please input the person's id: ")
-        events = self.attendances_service.get_ordered_events_attended_by_person(
-            self.persons_service.search_person("id", person_id)[0])
+        events = self.attendances_service.get_ordered_events_attended_by_person(person_id)
         self.write_events(events)
 
     def persons_attending_most_events(self):
-        persons = self.attendances_service.persons_attending_most_events()
+        persons = self.attendances_service.get_persons_attending_most_events()
+        self.write_persons(persons)
+
+    def persons_attending_least_events(self):
+        persons = self.attendances_service.get_persons_attending_least_events()
         self.write_persons(persons)
 
     def first_20percent_events_with_most_attendees(self):
@@ -216,10 +225,6 @@ class ConsoleUI:
     def generate_random_events(self):
         number_of_events = int(self.read("Please input the number of random events to be generated: "))
         self.events_service.generate_random_events(number_of_events)
-
-    def persons_attending_least_events(self):
-        persons = self.attendances_service.persons_attending_least_events(self.persons_service.repo.items)
-        self.write_persons(persons)
 
     def exit_application(self):
         exit()

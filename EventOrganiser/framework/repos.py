@@ -2,6 +2,7 @@ from EventOrganiser.domain.entities import Command, Person, Event, Attendance
 from EventOrganiser.domain.exceptions import *
 from EventOrganiser.domain.fields import Address, Date
 from EventOrganiser.framework.json_tools import JsonFileSaver
+from EventOrganiser.framework.validators import Validator
 
 
 class Repo:
@@ -24,6 +25,11 @@ class Repo:
             return self.items.index(entity)
         except:
             raise NotInRepoException
+
+    def is_empty(self):
+        if len(self.items) == 0:
+            return True
+        return False
 
 
 class ModifiableRepo(Repo):
@@ -100,14 +106,17 @@ class ModifiableFileRepo(ModifiableRepo, JsonFileSaver):
         self.load_from_file()
 
     def add(self, entity):
+        self.load_from_file()
         super().add(entity)
         self.save_to_file()
 
     def delete(self, entity):
+        self.load_from_file()
         super().delete(entity)
         self.save_to_file()
 
     def modify(self, old_entity, new_entity):
+        self.load_from_file()
         super().modify(old_entity, new_entity)
         self.save_to_file()
 
@@ -125,6 +134,29 @@ class ModifiableFileRepo(ModifiableRepo, JsonFileSaver):
 
 class PersonRepo(ModifiableRepo):
 
+    _validator: Validator
+    @property
+    def validator(self):
+        return self._validator
+    @validator.setter
+    def validator(self, value):
+        self._validator = value
+
+    def __init__(self, validator: Validator, items: list):
+        super().__init__(items)
+        self.validator = validator
+
+    def add(self, person):
+        self.validator.validate_person_from_repo(self.items, person)
+        super().add(person)
+
+    def delete(self, person):
+        super().delete(person)
+
+    def modify(self, old_person, new_person):
+        self.validator.validate_person(new_person)
+        super().modify(old_person, new_person)
+
     def get_person_with_field_value(self, field, value):
         if field != "address":
             if len(self.items) == 0:
@@ -141,12 +173,40 @@ class PersonRepo(ModifiableRepo):
                         pass
         raise NoFieldWithValueException
 
+    def get_persons(self, field, field_value):
+        persons = [person for person in self.items if person.has_field_with_value(field, field_value)]
+        return persons
+
 
 class PersonFileRepo(ModifiableFileRepo, PersonRepo):
 
-    def __init__(self, file_name: str, items: list):
+    def __init__(self, validator: Validator, file_name: str, items: list):
         ModifiableFileRepo.__init__(self, file_name, items)
+        PersonRepo.__init__(self, validator, items)
         self.load_from_file()
+
+    def add(self, person):
+        self.load_from_file()
+        PersonRepo.add(self, person)
+        self.save_to_file()
+
+    def delete(self, person):
+        self.load_from_file()
+        PersonRepo.delete(self, person)
+        self.save_to_file()
+
+    def modify(self, old_person, new_person):
+        self.load_from_file()
+        PersonRepo.modify(self, old_person, new_person)
+        self.save_to_file()
+
+    def get_person_with_field_value(self, field, value):
+        self.load_from_file()
+        return PersonRepo.get_person_with_field_value(self, field, value)
+
+    def get_persons(self, field, field_value):
+        self.load_from_file()
+        return PersonRepo.get_persons(self, field, field_value)
 
     def load_from_file(self):
         file = open(self.file_name, "r")
@@ -175,6 +235,51 @@ class PersonFileRepo(ModifiableFileRepo, PersonRepo):
 
 class EventRepo(ModifiableRepo):
 
+    _validator: Validator
+    @property
+    def validator(self):
+        return self._validator
+    @validator.setter
+    def validator(self, value):
+        self._validator = value
+
+    def __init__(self, validator: Validator, items: list):
+        super().__init__(items)
+        self.validator = validator
+
+    def add(self, event):
+        self.validator.validate_event_from_repo(self.items, event)
+        super().add(event)
+
+    def delete(self, event):
+        super().delete(event)
+
+    def modify(self, old_event, new_event):
+        self.validator.validate_event(new_event)
+        super().modify(old_event, new_event)
+
+    def _random_event(self):
+        from EventOrganiser.framework.randomization import Random
+        rand = Random()
+        event = Event(
+            rand.string_of_chr(10),
+            Date(
+                rand.string_of_int(2),
+                rand.string_of_chr(10),
+                rand.string_of_int(4)
+            ),
+            rand.string_of_chr(10),
+            rand.string_of_chr(10)
+        )
+        return event
+
+    def generate_random_event(self):
+        try:
+            event = self._random_event()
+            self.add(event)
+        except:
+            self.generate_random_event()
+
     def get_event_with_field_value(self, field, value):
         if field != "date":
             if len(self.items) == 0:
@@ -191,14 +296,47 @@ class EventRepo(ModifiableRepo):
                         pass
         raise NoFieldWithValueException
 
+    def get_events(self, field, field_value):
+        events = [event for event in self.items if event.has_field_with_value(field, field_value)]
+        return events
+
 
 class EventFileRepo(ModifiableFileRepo, EventRepo):
 
-    def __init__(self, file_name: str, items: list):
+    def __init__(self, validator: Validator, file_name: str, items: list):
         ModifiableFileRepo.__init__(self, file_name, items)
+        EventRepo.__init__(self, validator, items)
         self.load_from_file()
 
-    def load_from_json(self):
+    def add(self, event):
+        self.load_from_file()
+        EventRepo.add(self, event)
+        self.save_to_file()
+
+    def delete(self, event):
+        self.load_from_file()
+        EventRepo.delete(self, event)
+        self.save_to_file()
+
+    def modify(self, old_event, new_event):
+        self.load_from_file()
+        EventRepo.modify(self, old_event, new_event)
+        self.save_to_file()
+
+    def generate_random_event(self):
+        self.load_from_file()
+        EventRepo.generate_random_event(self)
+        self.save_to_file()
+
+    def get_event_with_field_value(self, field, value):
+        self.load_from_file()
+        return EventRepo.get_event_with_field_value(self, field, value)
+
+    def get_events(self, field, value):
+        self.load_from_file()
+        return EventRepo.get_events(self, field, value)
+
+    def load_from_file(self):
         file = open(self.file_name, "r")
         try:
             file_string = file.read()
@@ -226,29 +364,84 @@ class EventFileRepo(ModifiableFileRepo, EventRepo):
 
 class AttendanceRepo(ModifiableRepo):
 
+    _validator: Validator
+    @property
+    def validator(self):
+        return self._validator
+    @validator.setter
+    def validator(self, value):
+        self._validator = value
+
+    def __init__(self, validator: Validator, items: list):
+        super().__init__(items)
+        self.validator = validator
+
+    def add(self, persons: list, events: list, attendance):
+        self.validator.validate_attendance(persons, events, attendance)
+        super().add(attendance)
+
     def get_free_id(self):
         return len(self.items)
 
-    def get_attendances_with_person(self, person: Person):
+    def get_attendances_with_person_id(self, person_id: str):
         attendances = []
         if len(self.items) == 0:
             raise EmptyRepoException
+        if type(person_id) != str:
+            raise NotStringParameterException
+        for attendance in self.items:
+            if attendance.person_id == person_id:
+                attendances.append(attendance)
+        return attendances
+
+    def get_persons_attendances_counts(self):
+        attendances_count = {}
         for attendance in self.items:
             try:
-                if attendance.person == person:
-                    attendances.append(attendance)
+                attendances_count[str(attendance.person_id)] += 1
             except:
-                raise NotPersonException
-        return attendances
+                attendances_count[str(attendance.person_id)] = 1
+        return attendances_count
+
+    def get_events_attendances_count(self):
+        attendances_count = {}
+        for attendance in self.items:
+            try:
+                attendances_count[str(attendance.event_id)] += 1
+            except:
+                attendances_count[str(attendance.event_id)] = 1
+        return attendances_count
 
 
 class AttendanceFileRepo(ModifiableFileRepo, AttendanceRepo):
 
-    def __init__(self, file_name: str, items: list):
+    def __init__(self, validator: Validator, file_name: str, items: list):
         ModifiableFileRepo.__init__(self, file_name, items)
+        AttendanceRepo.__init__(self, validator, items)
         self.load_from_file()
 
-    def load_from_json(self):
+    def add(self, persons: list, events: list, attendance):
+        self.load_from_file()
+        AttendanceRepo.add(self, persons, events, attendance)
+        self.save_to_file()
+
+    def get_free_id(self):
+        self.load_from_file()
+        return AttendanceRepo.get_free_id(self)
+
+    def get_attendances_with_person_id(self, person_id: str):
+        self.load_from_file()
+        return AttendanceRepo.get_attendances_with_person_id(self, person_id)
+
+    def get_persons_attendances_counts(self):
+        self.load_from_file()
+        return AttendanceRepo.get_persons_attendances_counts(self)
+
+    def get_events_attendances_count(self):
+        self.load_from_file()
+        return AttendanceRepo.get_events_attendances_count(self)
+
+    def load_from_file(self):
         file = open(self.file_name, "r")
         try:
             file_string = file.read()
@@ -258,25 +451,8 @@ class AttendanceFileRepo(ModifiableFileRepo, AttendanceRepo):
             for data_attendance in data:
                 attendances.append(Attendance(
                     data_attendance["id"],
-                    Person(
-                        data_attendance["person"]["id"],
-                        data_attendance["person"]["name"],
-                        Address(
-                            data_attendance["person"]["address"]["city"],
-                            data_attendance["person"]["address"]["street"],
-                            data_attendance["person"]["address"]["number"]
-                        )
-                    ),
-                    Event(
-                        data_attendance["event"]["id"],
-                        Date(
-                            data_attendance["event"]["date"]["day"],
-                            data_attendance["event"]["date"]["month"],
-                            data_attendance["event"]["date"]["year"]
-                        ),
-                        data_attendance["event"]["duration"],
-                        data_attendance["event"]["description"]
-                    )
+                    data_attendance["person_id"],
+                    data_attendance["event_id"]
                 ))
 
             self.items = attendances

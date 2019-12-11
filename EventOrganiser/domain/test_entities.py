@@ -91,15 +91,15 @@ class TestCaseEvent(unittest.TestCase):
 
 class TestCaseAttendance(unittest.TestCase):
     def setUp(self):
-        self.person = Person("id", "name", Address("city", "street", "number"))
-        self.event = Event("id", Date("1", "month", "2000"), "duration", "description")
-        self.attendance = Attendance("id", self.person, self.event)
+        self.person_id = "id"
+        self.event_id = "id"
+        self.attendance = Attendance("id", self.person_id, self.event_id)
 
     def test_to_json(self):
         d = {
             "id": "id",
-            "person": self.person.to_json(),
-            "event": self.event.to_json()
+            "person_id": self.person_id,
+            "event_id": self.event_id
         }
         self.assertEqual(self.attendance.to_json(), d)
 
