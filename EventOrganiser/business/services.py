@@ -127,7 +127,9 @@ class AttendanceService(Service):
         attendances = self.repo.get_attendances_with_person_id(person_id)
         event_ids = [attendance.event_id for attendance in attendances]
         events = [event for event in self.events if event.id in event_ids]
-        events.sort(key=lambda event: (event.description, event.date.year, event.date.month, event.date.day))
+        # events.sort(key=lambda event: (event.description, event.date.year, event.date.month, event.date.day))
+        # self.repo.selection_sort(events, key=lambda event: (event.description, event.date.year, event.date.month, event.date.day), reversed=False)
+        self.repo.shake_sort(events, key=lambda event: (event.description, event.date.year, event.date.month, event.date.day), reversed=False)
         return events
 
     def get_persons_attending_most_events(self):
