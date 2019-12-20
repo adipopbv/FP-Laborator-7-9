@@ -31,44 +31,50 @@ class Repo:
             return True
         return False
 
-    def selection_sort(self, list, key, reversed):
-        def condition(elem1, elem2):
-            if reversed:
-                return key(elem1) > key(elem2)
-            return key(elem1) < key(elem2)
+    def selection_sort(self, list, key, reversed, cmp):
         for i in range(0, len(list)-1):
             ind = i
             # find the smallest element in the rest of the list
             for j in range(i+1, len(list)):
-                if condition(list[j], list[ind]):
+                if cmp(key(list[j]), key(list[ind])) == -1:
                     ind = j
             if reversed:
                 if i < ind:
                     # interchange
                     list[i], list[ind] = list[ind], list[i]
+
+        if reversed:
+            rev_list = []
+            for i in range(len(list)):
+                rev_list.append(list[-1*(i+1)])
+            list = rev_list
+            return rev_list
         return list
 
-    def shake_sort(self, list, key, reversed):
-        def condition(elem1, elem2, mirror):
-            if reversed and not mirror or not reversed and mirror:
-                return key(elem1) < key(elem2)
-            return key(elem1) > key(elem2)
+    def shake_sort(self, list, key, reversed, cmp):
         left = 0
         right = len(list) - 1
         last_swap = 0
         while left < right:
             # smallest element towards left
             for i in range(right, left, -1):
-                if condition(list[i-1], list[i], mirror=False):
+                if cmp(key(list[i-1]), key(list[i])) == 1:
                     list[i], list[i-1] = list[i-1], list[1]
                     last_swap = i
             left = last_swap
             # greatest element towards right
             for i in range(left, right, +1):
-                if condition(list[i], list[i], mirror=True):
+                if cmp(key(list[i]), key(list[i+1])) == 1:
                     list[i], list[i + 1] = list[i + 1], list[1]
                     last_swap = i
             right = last_swap
+
+        if reversed:
+            rev_list = []
+            for i in range(len(list)):
+                rev_list.append(list[-1*(i+1)])
+            list = rev_list
+            return list
         return list
 
 
